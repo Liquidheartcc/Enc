@@ -1,6 +1,6 @@
 import uuid
 
-from bot import asyncio, math, os, pyro, time, #qbClient
+from bot import asyncio, math, os, pyro, time #qbClient
 from bot.config import _bot, conf
 from bot.utils.bot_utils import (
     #Qbit_c,
