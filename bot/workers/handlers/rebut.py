@@ -272,7 +272,6 @@ async def en_rename(event, args, client):
             v=_v,
             _filter=_f,
             ccodec=_q,
-            new_name=new_name,
         )
         if not __pout == __out:
             await asyncio.sleep(3)
