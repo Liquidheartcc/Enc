@@ -91,10 +91,6 @@ async def on_startup():
         asyncio.create_task(autostat())
         asyncio.create_task(start_rpc())
         loop = asyncio.get_running_loop()
-        for signame in {"SIGINT", "SIGTERM", "SIGABRT"}:
-            loop.add_signal_handler(
-                getattr(signal, signame),
-            )
         if len(sys.argv) == 3:
             await onrestart()
         else:
