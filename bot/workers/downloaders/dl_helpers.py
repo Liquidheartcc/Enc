@@ -18,6 +18,13 @@ def clean_aria_dl(download):
         download = aria2.get_download(download.following_id)
         download.remove(force=True, files=True)
 
+def get_qbclient():
+    return qbClient(
+        host="localhost",
+        port=conf.QBIT_PORT,
+        VERIFY_WEBUI_CERTIFICATE=False,
+        REQUESTS_ARGS={"timeout": (30, 60)},
+    )
 
 def rm_leech_file(*gids):
     for gid in gids:
