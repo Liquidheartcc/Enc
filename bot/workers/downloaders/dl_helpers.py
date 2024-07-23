@@ -103,7 +103,6 @@ async def download2(dl, file, message=None, e=None):
 
 async def get_leech_name(url):
     aria2 = get_aria2()
-    dinfo = Qbit_c()
     try:
         url = replace_proxy(url)
         downloads = await sync_to_async(aria2.add, url, {"dir": f"{os.getcwd()}/temp"})
