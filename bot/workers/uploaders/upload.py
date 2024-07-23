@@ -7,11 +7,12 @@ from bot.utils.os_utils import file_exists
 
 
 class Uploader:
-    def __init__(self, sender=123456, _id=None):
+    def __init__(self, sender=123456, _id=None, new_name=None):
         self.sender = int(sender)
         self.callback_data = "cancel_upload"
         self.is_cancelled = False
         self.id = _id
+        self.new_name = new_name  # Add new_name attribute
         self.canceller = None
         self.time = None
         self.unfin_str = conf.UN_FINISHED_PROGRESS_STR
@@ -28,7 +29,9 @@ class Uploader:
                     thum = thumb
             code(self, index=self.id)
             fm = f"**From folder:** `{os.path.split(filepath)[0]}`"
-            fm += f"\n**File:** `{os.path.split(filepath)[1]}`"
+            # Use new_name if provided, otherwise use the original file name
+            file_name = self.new_name or os.path.split(filepath)[1]
+            fm += f"\n**File:** `{file_name}`"
             async with tele.action(from_user_id, "file"):
                 await reply.edit("🔺Uploading🔺")
                 self.time = u_start = time.time()
@@ -66,6 +69,7 @@ class Uploader:
         except Exception:
             decode(self.id, pop=True)
             await logger(Exception)
+
 
     async def progress_for_pyrogram(
         self, current, total, app, ud_type, message, start, file_info
