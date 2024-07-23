@@ -94,7 +94,6 @@ async def on_startup():
         for signame in {"SIGINT", "SIGTERM", "SIGABRT"}:
             loop.add_signal_handler(
                 getattr(signal, signame),
-                ),
             )
         if len(sys.argv) == 3:
             await onrestart()
