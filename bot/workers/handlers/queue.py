@@ -306,11 +306,7 @@ async def enleech(event, args: str, client, direct=False):
             return await event.reply(f"`{file.error}`")
         if not is_url(uri):
             return await event.reply(no_dl_spt_msg)
-        for item in queue.values():
-            if file.name in item:
-                return await event.reply(
-                    "**THIS TORRENT HAS ALREADY BEEN ADDED TO QUEUE**"
-                )
+        
         async with queue_lock:
             queue.update(
                 {
