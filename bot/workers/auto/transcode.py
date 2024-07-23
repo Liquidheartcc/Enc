@@ -416,24 +416,28 @@ async def thing():
 
         text = str()
         mi = await info(dl)
+        mi2 = await info(out)
         forward_task = asyncio.create_task(forward_(name, out, up, mi, f))
-
-        text += f"**Source:** `[{rlsgrp}]`"
+        
+        text = ""
         if mi:
-            text += f"\n\nMediainfo: **[(Source)]({mi})**"
-        mi_msg = await up.reply(
-            text,
-            disable_web_page_preview=True,
-            quote=True,
-        )
-        await mi_msg.copy(chat_id=log_channel) if op else None
+            text += f"\n\n🎞️ **Mediainfo:** **[(Source)]({mi})** | **[(Encoded)]({mi2})**"
+        else:
+            text += f"\n\n🎞️ **Mediainfo:** **N/A**"
+        #mi_msg = await up.reply(
+            #text,
+            #disable_web_page_preview=True,
+            #quote=True,
+        #)
+        #await mi_msg.copy(chat_id=log_channel) if op else None
 
         st_msg = await up.reply(
-            f"**Encode Stats:**\n\nOriginal Size: "
+            f"🚀 **Encode Stats:**\n\nOriginal Size: "
             f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
             f"Encoded Percentage: `{per}`\n\n"
             f"{'Cached' if einfo.cached_dl else 'Downloaded'} in `{dtime}`\n"
-            f"Encoded in `{etime}`\n{mux_msg}Uploaded in `{utime}`",
+            f"Encoded in `{etime}`\n{mux_msg}Uploaded in `{utime}`"
+            f"{text}",
             disable_web_page_preview=True,
             quote=True,
         )
