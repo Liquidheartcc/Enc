@@ -1,8 +1,9 @@
 import uuid
 
-from bot import asyncio, math, os, pyro, time
+from bot import asyncio, math, os, pyro, qbClient, time
 from bot.config import _bot, conf
 from bot.utils.bot_utils import (
+    Qbit_c,
     get_aria2,
     get_queue,
     replace_proxy,
@@ -18,13 +19,6 @@ def clean_aria_dl(download):
         download = aria2.get_download(download.following_id)
         download.remove(force=True, files=True)
 
-def get_qbclient():
-    return qbClient(
-        host="localhost",
-        port=conf.QBIT_PORT,
-        VERIFY_WEBUI_CERTIFICATE=False,
-        REQUESTS_ARGS={"timeout": (30, 60)},
-    )
 
 def rm_leech_file(*gids):
     for gid in gids:
@@ -40,6 +34,14 @@ def rm_leech_file(*gids):
         except Exception:
             log(Exception)
 
+
+def get_qbclient():
+    return qbClient(
+        host="localhost",
+        port=conf.QBIT_PORT,
+        VERIFY_WEBUI_CERTIFICATE=False,
+        REQUESTS_ARGS={"timeout": (30, 60)},
+    )
 
 
 async def rm_torrent_file(*hashes, qb=None):
@@ -102,8 +104,8 @@ async def download2(dl, file, message=None, e=None):
 
 
 async def get_leech_name(url):
-    dinfo = get_aria2()
     aria2 = get_aria2()
+    dinfo = Qbit_c()
     try:
         url = replace_proxy(url)
         downloads = await sync_to_async(aria2.add, url, {"dir": f"{os.getcwd()}/temp"})
