@@ -102,6 +102,7 @@ async def download2(dl, file, message=None, e=None):
 
 
 async def get_leech_name(url):
+    dinfo = get_aria2()
     aria2 = get_aria2()
     try:
         url = replace_proxy(url)
