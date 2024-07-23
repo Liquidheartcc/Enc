@@ -124,14 +124,6 @@ async def start(event, args, client):
         msg,
         buttons=[
             [Button.inline("Help", data="ihelp")],
-            [
-                Button.url(
-                    "Source-Code (Original)",
-                    url="github.com/1Danish-00/compressorqueue",
-                ),
-                Button.url("Developer (Original)", url="t.me/danish_00"),
-            ],
-            [Button.url("Fork Maintainer", url="t.me/Col_serra")],
         ],
     )
 
@@ -177,14 +169,6 @@ async def beck(event):
         msg,
         buttons=[
             [Button.inline("Help", data="ihelp")],
-            [
-                Button.url(
-                    "Source-Code (Original)",
-                    url="github.com/1Danish-00/compressorqueue",
-                ),
-                Button.url("Developer (Original)", url="t.me/danish_00"),
-            ],
-            [Button.url("Fork Maintainer", url="t.me/Col_serra")],
         ],
     )
 
@@ -284,15 +268,11 @@ async def icommands(event):
         f"""`
 start{s} - check if bot is awake and get usage.
 restart{s} -  restart bot
-update{s} - update bot
-nuke{s} - ☢️ nuke bot
 bash{s} - /bash + command
 eval{s} - evaluate code
 pause{s} - prevent bot from encoding
 peval{s} - same as eval but with pyrogram
 ping - ping!
-permit{s} - add a temporary user
-unpermit{s} - removes a temporary user
 add{s} - add video to queue
 l{s} - add link to queue
 ql{s} - add torrent link to queue
@@ -302,7 +282,6 @@ batch{s} - preview batches
 list{s} - list all files in a torrent
 forward{s} - manually forward a message to fchannel
 v{s} - turn v2,3,4… on (with message) or off
-download{s} - download a file or link to bot
 upload{s} - upload from a local directory or link
 rename{s} - rename a video file/link
 mux{s} - remux a file
@@ -311,10 +290,6 @@ set{s} - set custom ffmpeg code
 reset{s} - reset default ffmpeg code
 mset{s} - set, reset, disable mux_args
 mget{s} - view current mux_args
-filter{s} - filter & stuff
-vfilter{s} - view filter
-groupenc{s} - allow encoding in group toggle
-delfilter{s} - delete filter
 airing{s} - get anime airing info
 anime{s} - get anime info
 name{s} - quick filter with anime_title
@@ -324,7 +299,6 @@ rss{s} - edit, delete & subscribe rss feeds
 status{s} - 🆕 get bot's status
 showthumb{s} - 🖼️ show current thumbnail
 parse{s} - toggle parsing with captions or anilist
-groupenc{s} - turn off/on encoding in groups
 cancelall{s} - ❌ clear cached downloads & queued files
 clear{s} - clear queued files
 logs{s} - get bot logs
