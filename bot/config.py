@@ -1,5 +1,5 @@
 #    This file is part of the Encoder distribution.
-#    Copyright (c) 2021 Danish_00, Nubuki-all
+#    Copyright (c) 2021 Danish_00
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -9,9 +9,8 @@
 #    WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #    General Public License for more details.
-#
-# License can be found in <
-# https://github.com/Nubuki-all/Enc/blob/main/License> .
+
+
 import traceback
 
 from decouple import config
@@ -26,13 +25,13 @@ class Config:
             self.ALLOW_ACTION = config("ALLOW_ACTION", default=True, cast=bool)
             self.APP_ID = config("APP_ID", default=6, cast=int)
             self.API_HASH = config(
-                "API_HASH", default="eb06d4abfb49dc3eeb1aeb98ae0f581e"
+                "API_HASH", default=None
             )
             self.ARIA2_PORT = config("ARIA2_PORT", default=6800, cast=int)
             self.BOT_TOKEN = config("BOT_TOKEN")
             self.CACHE_DL = config("CACHE_DL", default=False, cast=bool)
             self.CAP_DECO = config("CAP_DECO", default="◉")
-            self.C_LINK = config("C_LINK", default="@ANi_MiNE")
+            self.C_LINK = config("C_LINK", default="Encoded by HyperX")
             self.CMD_SUFFIX = config("CMD_SUFFIX", default=str())
             self.DATABASE_URL = config("DATABASE_URL", default=None)
             self.DBNAME = config("DBNAME", default="ENC")
@@ -49,9 +48,8 @@ class Config:
             self.FCODEC = config("FCODEC", default=None)
             self.FFMPEG = config(
                 "FFMPEG",
-                default='ffmpeg -i "{}" -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? "{}"',
-            )
-            self.FINISHED_PROGRESS_STR = config("FINISHED_PROGRESS_STR", default="🧡")
+                default="""ffmpeg -i "{}" -preset veryfast -vf "subtitles='https\:\/\/mindflayersmirror.xuploads.workers.dev\/1\:\/MFmirror\/logo.ass'" -c:v libx265 -s 854x480 -x265-params 'bframes=8:psy-rd=1:ref=3:aq-mode=3:aq-strength=0.8:deblock=1,1' -metadata 'title=Encoded By JAV STORE' -pix_fmt yuv420p -crf 23 -c:a libopus -b:a 128k -map 0 -ac 2 -vbr 2 -level 4.0 -threads 1 "{}"
+            """)
             self.FL_CAP = config("FILENAME_AS_CAPTION", default=False, cast=bool)
             self.FS_THRESHOLD = config("FLOOD_SLEEP_THRESHOLD", default=600, cast=int)
             self.FSTICKER = config("FSTICKER", default=None)
@@ -69,8 +67,8 @@ class Config:
             self.QBIT_TIMEOUT = config("QBIT_TIMEOUT", default=20, cast=int)
             self.RSS_CHAT = config("RSS_CHAT", default=0, cast=int)
             self.RSS_DELAY = config("RSS_DELAY", default=60, cast=int)
-            self.RSS_DIRECT = config("RSS_DIRECT", default=True, cast=bool)
-            self.RELEASER = config("RELEASER", default="A-M|ANi-MiNE")
+            self.RSS_DIRECT = config("RSS_DIRECT", default=False, cast=bool)
+            self.RELEASER = config("RELEASER", default="HyperX")
             self.TELEGRAPH_API = config(
                 "TELEGRAPH_API", default="https://api.telegra.ph"
             )
@@ -78,16 +76,17 @@ class Config:
             self.TEMP_USER = config("TEMP_USERS", default=str())
             self.TG_DL_CLIENT = config("TG_DL_CLIENT", default="pyrogram")
             self.TG_UL_CLIENT = config("TG_UL_CLIENT", default="pyrogram")
-            self.THUMB = config("THUMBNAIL", default=None)
+            self.THUMB = config("THUMBNAIL", default="https://telegra.ph/file/cc6cb5448aee307c8f16e.jpg")
+            self.FINISHED_PROGRESS_STR = config("FINISHED_PROGRESS_STR", default="🧡")
             self.UN_FINISHED_PROGRESS_STR = config(
                 "UN_FINISHED_PROGRESS_STR", default="🤍"
             )
-            self.USE_ANILIST = config("USE_ANILIST", default=True, cast=bool)
-            self.USE_CAPTION = config("USE_CAPTION", default=True, cast=bool)
+            self.USE_ANILIST = config("USE_ANILIST", default=False, cast=bool)
+            self.USE_CAPTION = config("USE_CAPTION", default=False, cast=bool)
             self.WORKERS = config("WORKERS", default=2, cast=int)
         except Exception:
             print("Environment vars Missing; or")
-            print("Something went wrong:")
+            print("something went wrong")
             print(traceback.format_exc())
             exit()
 
@@ -126,7 +125,6 @@ class Runtime_Config:
         self.temp_users = []
         self.u_cancel = []
         self.version2 = []
-
 
 conf = Config()
 _bot = Runtime_Config()
