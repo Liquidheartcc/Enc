@@ -1,9 +1,8 @@
 import uuid
 
-from bot import asyncio, math, os, pyro, time #qbClient
+from bot import asyncio, math, os, pyro, time
 from bot.config import _bot, conf
 from bot.utils.bot_utils import (
-    #Qbit_c,
     get_aria2,
     get_queue,
     replace_proxy,
@@ -34,14 +33,6 @@ def rm_leech_file(*gids):
         except Exception:
             log(Exception)
 
-
-def get_qbclient():
-    return qbClient(
-        host="localhost",
-        port=conf.QBIT_PORT,
-        VERIFY_WEBUI_CERTIFICATE=False,
-        REQUESTS_ARGS={"timeout": (30, 60)},
-    )
 
 
 async def rm_torrent_file(*hashes, qb=None):
