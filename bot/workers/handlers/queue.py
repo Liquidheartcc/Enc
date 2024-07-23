@@ -183,6 +183,7 @@ async def enleech(event, args: str, client, direct=False):
         -tc caption_tag (tag caption type as…)
         -tf file_tag (tag file_as)
         -v number (tag according to version number)
+        -n new_name (rename the file to this name)
     Both flags override /filter & /v
 
     :: filter format-
@@ -194,6 +195,7 @@ async def enleech(event, args: str, client, direct=False):
     if not (user_is_allowed(user_id) or direct):
         return
     cust_fil = cust_v = str()
+    new_name = None
     mode = "None"
     o_args = None
     queue = get_queue()
@@ -206,7 +208,7 @@ async def enleech(event, args: str, client, direct=False):
     if args:
         o_args = args
         flag, args = get_args(
-            "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+            "-f", "-rm", "-tc", "-tf", "-v", "-n", to_parse=args, get_unknown=True
         )
         if flag.rm or flag.tc or flag.tf:
             cust_fil = flag.rm or "disabled__"
@@ -216,6 +218,7 @@ async def enleech(event, args: str, client, direct=False):
         else:
             cust_fil = str_esc(flag.f)
         cust_v = flag.v
+        new_name = flag.n
     try:
         if event.is_reply:
             rep_event = await event.get_reply_message()
@@ -271,7 +274,7 @@ async def enleech(event, args: str, client, direct=False):
                         queue.update(
                             {
                                 (chat_id, event2.id): [
-                                    file.name,
+                                    new_name or file.name,
                                     (user_id, event2),
                                     (
                                         cust_v or get_v(),
@@ -311,7 +314,7 @@ async def enleech(event, args: str, client, direct=False):
             queue.update(
                 {
                     (chat_id, event.id): [
-                        file.name,
+                        new_name or file.name,
                         (user_id, None),
                         (cust_v or get_v(), cust_fil or get_f(), ("aria2", mode)),
                     ]
@@ -346,6 +349,7 @@ async def enleech2(event, args: str, client, direct=False):
         -tc caption_tag (tag caption type as…)
         -tf file_tag (tag file_as)
         -v number (tag according to version number)
+        -n new_name (rename the file to this name)
     Both flags override /filter & /v
 
     :: filter format-
@@ -357,6 +361,7 @@ async def enleech2(event, args: str, client, direct=False):
     if not (user_is_allowed(user_id) or direct):
         return
     cust_fil = cust_v = flag = str()
+    new_name = None
     queue = get_queue()
     invalid_msg = "`Invalid torrent/direct link`"
     mode = "None"
@@ -388,6 +393,7 @@ async def enleech2(event, args: str, client, direct=False):
         else:
             cust_fil = str_esc(flag.f)
         cust_v = flag.v
+        new_name = flag.n
         if flag.s and not flag.s.isdigit():
             return await event.reply("`Value for '-s' arg has to be digit.`")
     try:
@@ -427,7 +433,7 @@ async def enleech2(event, args: str, client, direct=False):
                             await asyncio.sleep(10)
                             continue
                         if (flag.b and flag.y) and file.count > 1:
-                            file.name = flag.n or file.name
+                            file.name = new_name or file.name
                             mode = "Batch."
                         elif (flag.s and flag.y) and file.count > 1:
                             if (ind := int(flag.s)) > (file.count - 1):
@@ -442,7 +448,7 @@ async def enleech2(event, args: str, client, direct=False):
                                 await asyncio.sleep(5)
                                 continue
                             mode = f"Select. {flag.s}"
-                            file.name = flag.n or (file.file_list[ind].split("/"))[-1]
+                            file.name = new_name or (file.file_list[ind].split("/"))[-1]
                         if file.count > 1:
                             await event2.reply(no_bt_spt_msg, quote=True)
                             await asyncio.sleep(3)
@@ -486,7 +492,7 @@ async def enleech2(event, args: str, client, direct=False):
                         queue.update(
                             {
                                 (chat_id, event2.id): [
-                                    file.name,
+                                    new_name or file.name,
                                     (user_id, event2),
                                     (
                                         cust_v or get_v(),
@@ -520,7 +526,7 @@ async def enleech2(event, args: str, client, direct=False):
         if file.error:
             return await event.reply(f"`{file.error}`")
         if flag and flag.b and file.count > 1:
-            file.name = flag.n or file.name
+            file.name = new_name or file.name
             mode = "Batch."
         elif flag and flag.s and file.count > 1:
             if (ind := int(flag.s)) > (file.count - 1):
@@ -531,7 +537,7 @@ async def enleech2(event, args: str, client, direct=False):
             if not is_video_file(file.file_list[ind]):
                 return await event.reply("'-s': " + no_fl_spt_msg)
             mode = f"Select. {flag.s}"
-            file.name = flag.n or (file.file_list[ind].split("/"))[-1]
+            file.name = new_name or (file.file_list[ind].split("/"))[-1]
         elif file.count > 1:
             return await event.reply(no_bt_spt_msg)
         elif not is_video_file(file.name):
@@ -558,7 +564,7 @@ async def enleech2(event, args: str, client, direct=False):
             queue.update(
                 {
                     (chat_id, event.id): [
-                        file.name,
+                        new_name or file.name,
                         (user_id, None),
                         (cust_v or get_v(), cust_fil or get_f(), ("qbit", mode)),
                     ]
