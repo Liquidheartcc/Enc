@@ -2,7 +2,7 @@
 
 [![pyLint](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml/badge.svg?branch=main)](https://github.com/Nubuki-all/Tg-encoder/actions/workflows/pyLint.yml)
 
-__Still in beta…__
+<a href="https://dashboard.heroku.com/new-app?template=https://github.com/Liquidheartcc/Enc"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy To Heroku Button"></a>
 
 ### Variables
 
