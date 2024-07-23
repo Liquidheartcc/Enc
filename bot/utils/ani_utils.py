@@ -323,19 +323,22 @@ async def parse(
     folder="downloads/",
     _filter=None,
     ccodec=None,
+    new_name=None  # Accept new_name as an argument
 ):
     try:
         if _file:
             file_name = _file
             file_name2 = file_name
         else:
-            file_name = f"{name}"
+            # Use new_name if provided, otherwise use name
+            file_name = new_name or f"{name}"
             file_name2 = file_name
     except Exception as e:
         print("An error occurred:", e)
     if "/" in file_name:
         file_name = file_name.replace("/", " ")
     return file_name, file_name2
+
 
 
 async def dynamicthumb(name, thum="thumb2.jpg", anilist=True, _filter=None):
