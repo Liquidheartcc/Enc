@@ -154,14 +154,6 @@ async def enpause(message):
             await logger(Exception)
 
 
-async def send_rss(msg: str, chat_id: int = None):
-    try:
-        chat = chat_id or conf.RSS_CHAT
-        return await avoid_flood(tele.send_message, chat, msg)
-    except Exception:
-        await logger(Exception)
-
-
 async def avoid_flood(func, *args, **kwargs):
     try:
         pfunc = partial(func, *args, **kwargs)
