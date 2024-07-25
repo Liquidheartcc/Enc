@@ -390,7 +390,6 @@ async def thing():
                 f"Uploading of `{out}` failed because file was larger than 2GB",
                  quote=True,
             )
-            continue
 
         upload = uploader(sender_id, _id)
         up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
