@@ -43,7 +43,6 @@ from .workers.handlers.manage import (
     reffmpeg,
     restart,
     rmfilter,
-    rss_handler,
     save_thumb,
     set_mux_args,
     update2,
@@ -245,10 +244,6 @@ async def _(e):
 async def _(e):
     await event_handler(e, pause)
 
-
-@tele.on(events.NewMessage(pattern=command(["rss"])))
-async def _(e):
-    await event_handler(e, rss_handler, require_args=True)
 
 
 ######## Callbacks #########
