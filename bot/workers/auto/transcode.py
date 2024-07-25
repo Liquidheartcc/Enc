@@ -387,8 +387,8 @@ async def thing():
         size_of_file = os.path.getsize(out)
         if size_of_file > 2126000000:  # 2126000000 bytes ≈ 2GB
             chain_msg = await reply_message(
-                f"Uploading of `{out}` failed because file was larger than 2GB",
-                 quote=True,
+                text=f"Uploading of `{out}` failed because file was larger than 2GB",
+                quote=True,
             )
 
         upload = uploader(sender_id, _id)
