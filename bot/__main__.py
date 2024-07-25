@@ -105,7 +105,7 @@ async def get_me():
 loop = asyncio.get_event_loop()
 loop.run_until_complete(get_me())
 
-LOGS.info(f"@{me.username} is ready!")
+LOGS.info(f"Bot is ready!")
 
 
 def command(commands: list, prefixes: list = ["/"]):
@@ -423,7 +423,7 @@ async def _(pyro, message):
 
 ########### Start ############
 
-LOGS.info(f"{me.first_name} has started.")
+LOGS.info(f"{me.first_name} has started!.")
 with tele:
     tele.loop.run_until_complete(on_startup())
     tele.loop.run_forever()
