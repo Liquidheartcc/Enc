@@ -381,13 +381,23 @@ async def thing():
         fname = path_split(out)[1]
         pcap = await custcap(name, fname, ver=v, encoder=conf.ENCODER, _filter=f)
         await op.edit(f"`Uploading…` `{out}`") if op else None
+
+        # Check file size
+        size_of_file = os.path.getsize(out)
+        if size_of_file > 2126000000:  # 2126000000 bytes ≈ 2GB
+            chain_msg = await reply_message(
+                chain_msg,
+                f"Uploading of `{out}` failed because file was larger than 2GB",
+                 quote=True,
+            )
+            continue
+
         upload = uploader(sender_id, _id)
         up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
         if upload.is_cancelled:
             m = f"`Upload of {out} was cancelled`"
             if sender_id != upload.canceller:
                 canceller = await pyro.get_users(upload.canceller)
-                # m += f"by [{canceller.first_name}](tg://user?id={upload.canceller})"
                 m += f"by {canceller.mention()}"
             m += "!"
             await msg_p.edit(m)
