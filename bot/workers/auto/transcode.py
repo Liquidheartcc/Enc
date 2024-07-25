@@ -1,3 +1,4 @@
+import os
 from os.path import split as path_split
 from os.path import splitext as split_ext
 from shutil import copy2 as copy_file
