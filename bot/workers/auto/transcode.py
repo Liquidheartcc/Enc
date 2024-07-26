@@ -437,6 +437,14 @@ async def thing():
                     text=f"Uploading of `{out}` to Google Drive failed: {str(e)}",
                     quote=True,
                 )
+            skip(queue_id)
+            mark_file_as_done(einfo.select, queue_id)
+            await save2db()
+            await save2db("batches")
+            if download:
+                await download.clean_download()
+            s_remove(thumb2, dl, out)
+            return
         else:
             upload = uploader(sender_id, _id)
             up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
