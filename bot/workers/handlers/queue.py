@@ -284,7 +284,7 @@ async def enleech(event, args: str, client, direct=False):
                         await save2db()
 
                         msg = await event2.reply(
-                            f"**Link added to queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`",
+                            f"**Added to queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`",
                             quote=True,
                         )
                         await asyncio.sleep(5)
@@ -320,7 +320,7 @@ async def enleech(event, args: str, client, direct=False):
             await save2db()
         if len(queue) > 1 or bot_is_paused():
             msg = await event.reply(
-                f"**Torrent added To Queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`"
+                f"**Added To Queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`"
             )
             if len(queue) > 1:
                 return asyncio.create_task(listqueue(msg, None, event.client, False))
@@ -499,7 +499,7 @@ async def enleech2(event, args: str, client, direct=False):
                         await save2db()
 
                         msg = await event2.reply(
-                            f"**Link added to queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`",
+                            f"**Added to queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`",
                             quote=True,
                         )
                         await asyncio.sleep(5)
@@ -567,7 +567,7 @@ async def enleech2(event, args: str, client, direct=False):
             await save2db()
         if len(queue) > 1 or bot_is_paused():
             msg = await event.reply(
-                f"**Torrent added To Queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`"
+                f"**Added To Queue ⏰, POS:** `{len(queue)-1}`\n`Please Wait , Encode will start soon`"
             )
             if len(queue) > 1:
                 return asyncio.create_task(listqueue(msg, None, event.client, False))
