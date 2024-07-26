@@ -428,13 +428,13 @@ async def thing():
                 download_url = upload_to_gdrive(out, folder_id)
                 chain_msg = await reply_message(
                     message=message,
-                    text=f"File `{out}` is larger than 2GB. Uploaded to Google Drive: {download_url}",
+                    text=f"`{out}` Upload Successfully!\n\nGoogle Drive: {download_url}",
                     quote=True,
                 )
             except Exception as e:
                 chain_msg = await reply_message(
                     message=message,
-                    text=f"Uploading of `{out}` to Google Drive failed: {str(e)}",
+                    text=f"Uploading of `{out}` to Google Drive Failed: {str(e)}",
                     quote=True,
                 )
             skip(queue_id)
