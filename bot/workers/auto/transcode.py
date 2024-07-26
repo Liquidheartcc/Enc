@@ -504,16 +504,16 @@ async def thing():
                 await download.clean_download()
             s_remove(dl, out)
 
-        except Exception:
-            await logger(Exception)
-            error = (
-                "Due to an unknown error "
-                "bot has been paused indefinitely\n"
-                "check logs for more info."
-            )
-            l_msg = await bc_msg(error)
-            entime.pause_indefinitely(l_msg)
+    except Exception:
+        await logger(Exception)
+        error = (
+            "Due to an unknown error "
+            "bot has been paused indefinitely\n"
+            "check logs for more info."
+        )
+        l_msg = await bc_msg(error)
+        entime.pause_indefinitely(l_msg)
 
-        finally:
-            einfo.reset()
-            await asyncio.sleep(5)
+    finally:
+        einfo.reset()
+        await asyncio.sleep(5)
