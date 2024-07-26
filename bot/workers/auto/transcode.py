@@ -1,4 +1,6 @@
 import os
+import time
+import pickle
 from os.path import split as path_split
 from os.path import splitext as split_ext
 from shutil import copy2 as copy_file
@@ -34,9 +36,6 @@ from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
 from bot.workers.uploaders.dump import dumpdl
 from bot.workers.uploaders.upload import Uploader as uploader
-import time
-import pickle
-import mimetypes
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
