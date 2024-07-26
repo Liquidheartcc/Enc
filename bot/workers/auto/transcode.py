@@ -422,7 +422,7 @@ async def thing():
         size_of_file = os.path.getsize(out)
         if size_of_file > 2126000000:  # 2126000000 bytes ≈ 2GB
             folder_id = '1B7B15U7a14mWpPKvKvMe6vRXAg10zpL2'
-            reply = f"Uploading to GDrive...!"
+            reply = f"**📂 Uploading to GDrive...!**"
             await msg_p.edit(reply)
             if op:
                 await op.edit(reply)
@@ -432,7 +432,7 @@ async def thing():
                 download_url = upload_to_gdrive(out, folder_id)
                 chain_msg = await reply_message(
                     message=message,
-                    text=f"**Upload Successful!** \n\n**{file_name}** \n**Size: {gb} GB** \n**Google Drive:** {download_url}",
+                    text=f"**📂 Upload Successful!** \n\n**{file_name}** \n**Size: {gb} GB** \n**Google Drive:** {download_url}",
                     quote=True,
                 )
             except Exception as e:
@@ -445,6 +445,8 @@ async def thing():
             mark_file_as_done(einfo.select, queue_id)
             await save2db()
             await save2db("batches")
+            await msg_p.delete()
+            await op.delete() if op else None
             if download:
                 await download.clean_download()
             s_remove(thumb2, dl, out)
