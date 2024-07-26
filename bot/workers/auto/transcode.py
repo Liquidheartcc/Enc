@@ -422,6 +422,8 @@ async def thing():
         size_of_file = os.path.getsize(out)
         if size_of_file > 2126000000:  # 2126000000 bytes ≈ 2GB
             folder_id = '1B7B15U7a14mWpPKvKvMe6vRXAg10zpL2'
+            reply = f"Uploading to GDrive...!"
+            await msg.edit(reply)
             gb = size_of_file / (1024 * 1024 * 1024)
             gb = round(gb, 2)
             try:
