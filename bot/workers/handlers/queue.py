@@ -223,11 +223,10 @@ async def enleech(event, args: str, client, direct=False):
                 await event.reply("**Warning:** `Use /add for files instead.`")
                 return await addqueue(event, o_args, client)
             if args:
-                if not args.isdigit():
-                    return await event.reply(
-                        f"**Yeah No.**\n`Error: expected a number but received '{args}'.`"
-                    )
-                args = int(args)
+                args_list = args.split(' ', 1)
+                url = args_list[0]
+                new_file_name = args_list[1] if len(args_list) > 1 else None
+          
                 async with queue_lock:
                     for _none, _id in zip(
                         range(args), itertools.count(start=rep_event.id)
@@ -253,6 +252,8 @@ async def enleech(event, args: str, client, direct=False):
                             await event2.reply(no_dl_spt_msg, quote=True)
                             await asyncio.sleep(5)
                             continue
+                        if new_file_name:
+                            file.name = new_file_name
                         already_in_queue = False
                         for item in queue.values():
                             if file.name in item:
