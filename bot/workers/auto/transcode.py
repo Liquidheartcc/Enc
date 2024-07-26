@@ -45,7 +45,7 @@ from google.auth.transport.requests import Request
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 CREDENTIALS_FILE_PATH = 'bot/credentials.json'
 TOKEN_PICKLE_FILE_PATH = 'bot/token.pickle'
- 
+GDRIVE_ID = '1B7B15U7a14mWpPKvKvMe6vRXAg10zpL2'
 
 def upload_to_gdrive(file_path, folder_id):
     """Uploads a file to Google Drive and returns the web view link."""
@@ -421,7 +421,7 @@ async def thing():
         # Check file size
         size_of_file = os.path.getsize(out)
         if size_of_file > 2126000000:  # 2126000000 bytes ≈ 2GB
-            folder_id = '1B7B15U7a14mWpPKvKvMe6vRXAg10zpL2'
+            folder_id = GDRIVE_ID
             reply = f"**📂 Uploading to GDrive...!**"
             await msg_p.edit(reply)
             if op:
