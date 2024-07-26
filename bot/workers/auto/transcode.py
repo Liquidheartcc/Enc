@@ -44,8 +44,8 @@ from google.auth.transport.requests import Request
 
 # Constants for Google Drive API
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
-CREDENTIALS_FILE_PATH = '/bot/credentials.json'
-TOKEN_PICKLE_FILE_PATH = '/bot/token.pickle'
+CREDENTIALS_FILE_PATH = 'bot/credentials.json'
+TOKEN_PICKLE_FILE_PATH = 'bot/token.pickle'
 
 def upload_to_gdrive(file_path, folder_id):
     """Uploads a file to Google Drive and returns the web view link."""
