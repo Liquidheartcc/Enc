@@ -429,7 +429,7 @@ async def thing():
                 download_url = upload_to_gdrive(out, folder_id)
                 chain_msg = await reply_message(
                     message=message,
-                    text=f"**Upload Successfully!** \n\n**{file_name}**\n **Size: {gb} GB** \n**Google Drive:** {download_url}",
+                    text=f"**Upload Successful!** \n\n**{file_name}** \n**Size: {gb} GB** \n**Google Drive:** {download_url}",
                     quote=True,
                 )
             except Exception as e:
