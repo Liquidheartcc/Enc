@@ -34,11 +34,11 @@ from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
 from bot.workers.uploaders.dump import dumpdl
 from bot.workers.uploaders.upload import Uploader as uploader
-import os
 import time
 import pickle
+import mimetypes
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
@@ -62,8 +62,13 @@ def upload_to_gdrive(file_path, folder_id):
         with open(TOKEN_PICKLE_FILE_PATH, 'wb') as token:
             pickle.dump(creds, token)
     service = build('drive', 'v3', credentials=creds)
-    media = MediaFileUpload(file_path, mimetype='*/*')
-    file_metadata = {'name': os.path.basename(file_path), 'parents': [folder_id]}
+    file_mimetype, _ = mimetypes.guess_type(file_path)
+    media = MediaIoBaseUpload(open(file_path, 'rb'), mimetype=file_mimetype, resumable=True)
+    file_metadata = {
+        'name': os.path.basename(file_path),
+        'parents': [folder_id],
+        'mimeType': file_mimetype
+    }
     file = service.files().create(body=file_metadata, media_body=media, fields='id,webViewLink').execute()
     return file.get("webViewLink")
 
