@@ -423,11 +423,13 @@ async def thing():
         size_of_file = os.path.getsize(out)
         if size_of_file > 2126000000:  # 2126000000 bytes ≈ 2GB
             folder_id = '1B7B15U7a14mWpPKvKvMe6vRXAg10zpL2'
+            gb = size_of_file / (1024 * 1024 * 1024)
+            gb = round(gb, 2)
             try:
                 download_url = upload_to_gdrive(out, folder_id)
                 chain_msg = await reply_message(
                     message=message,
-                    text=f"{file_name} Upload Successfully! \nGoogle Drive: {download_url}",
+                    text=f"**Upload Successfully!** \n\n**{file_name}**\n **Size: {gb} GB** \n**Google Drive:** {download_url}",
                     quote=True,
                 )
             except Exception as e:
