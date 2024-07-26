@@ -1,5 +1,5 @@
 from pyrogram.types import Message
-
+import re
 from bot import asyncio, dl_pause, errors, itertools, queue_lock
 from bot.fun.quips import enquip4
 from bot.utils.ani_utils import qparse
@@ -170,6 +170,7 @@ async def listqueuep(event, args, client):
             await logger(Exception)
         return await event.reply(rply)
 
+import re
 
 async def enleech(event, args: str, client, direct=False):
     """
@@ -203,8 +204,16 @@ async def enleech(event, args: str, client, direct=False):
     )
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
+    
+    new_file_name = None
+    
     if args:
         o_args = args
+        # Extract new file name from arguments if provided
+        match = re.match(r"(.+)\s+<(.+)>", args)
+        if match:
+            args, new_file_name = match.groups()
+        
         flag, args = get_args(
             "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
         )
@@ -223,10 +232,11 @@ async def enleech(event, args: str, client, direct=False):
                 await event.reply("**Warning:** `Use /add for files instead.`")
                 return await addqueue(event, o_args, client)
             if args:
-                args_list = args.split(' ', 1)
-                url = args_list[0]
-                new_file_name = args_list[1] if len(args_list) > 1 else None
-          
+                if not args.isdigit():
+                    return await event.reply(
+                        f"**Yeah No.**\n`Error: expected a number but received '{args}'.`"
+                    )
+                args = int(args)
                 async with queue_lock:
                     for _none, _id in zip(
                         range(args), itertools.count(start=rep_event.id)
@@ -252,8 +262,6 @@ async def enleech(event, args: str, client, direct=False):
                             await event2.reply(no_dl_spt_msg, quote=True)
                             await asyncio.sleep(5)
                             continue
-                        if new_file_name:
-                            file.name = new_file_name
                         already_in_queue = False
                         for item in queue.values():
                             if file.name in item:
@@ -269,6 +277,12 @@ async def enleech(event, args: str, client, direct=False):
                         if not bot_is_paused():
                             pause(status=dl_pause)
 
+                        # Use new file name if provided
+                        if new_file_name:
+                            file.name = new_file_name
+                        else:
+                            file.name = file.name
+                        
                         queue.update(
                             {
                                 (chat_id, event2.id): [
@@ -309,6 +323,12 @@ async def enleech(event, args: str, client, direct=False):
             return await event.reply(no_dl_spt_msg)
         
         async with queue_lock:
+            # Use new file name if provided
+            if new_file_name:
+                file.name = new_file_name
+            else:
+                file.name = file.name
+                
             queue.update(
                 {
                     (chat_id, event.id): [
@@ -329,7 +349,6 @@ async def enleech(event, args: str, client, direct=False):
         await logger(Exception)
         await rm_pause(dl_pause)
         return await event.reply(f"An error Occurred:\n - {e}")
-
 
 async def enleech2(event, args: str, client, direct=False):
     """
