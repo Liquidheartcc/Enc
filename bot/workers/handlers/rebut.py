@@ -169,12 +169,13 @@ async def en_download(event, args, client):
         await try_delete(event)
         d_id = f"{e.chat.id}:{e.id}"
         download = downloader(_id=d_id, uri=link, folder=_dir)
+        download.file_name = new_filename
         await download.start(loc, 0, message, e)
         if download.is_cancelled or download.download_error:
             return await report_failed_download(
                 download, e, download.file_name, event.sender_id
             )
-        f_loc = _dir + (new_filename if new_filename else download.file_name)
+        f_loc = _dir + (download.file_name)
         if new_filename:
             os.rename(_dir + download.file_name, f_loc)
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
