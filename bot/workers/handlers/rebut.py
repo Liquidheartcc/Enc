@@ -160,8 +160,10 @@ async def en_download(event, args, client):
                 _dir = arg.dir
             if arg.cap and not message.text:
                 loc = message.caption
-            if arg.n:
-                new_filename = arg.n
+            if "-n" in args:
+                new_filename_index = args.index("-n") + 1
+                if new_filename_index < len(args):
+                    new_filename = args[new_filename_index]
 
         link = message.text if message.text else link
         if not loc:
