@@ -329,7 +329,7 @@ async def parse(
             file_name = _file
             file_name2 = file_name
         else:
-            file_name = f"{name}"
+            file_name = f"{name}.{_ext}"
             file_name2 = file_name
     except Exception as e:
         print("An error occurred:", e)
