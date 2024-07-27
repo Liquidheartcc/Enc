@@ -133,7 +133,7 @@ async def en_download(event, args, client):
         link = None
         filename_from_download = None
         rep_event = await event.get_reply_message()
-        message = await client.get_messages(event.chat_id, int((link unavailable)))
+        message = await client.get_messages(event.chat_id, int(rep_event.id))
         if message.text and not (is_url(message.text) or is_magnet(message.text)):
             return await message.reply("`Not a valid link`")
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
