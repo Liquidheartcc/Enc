@@ -293,9 +293,6 @@ async def thing():
                 await asyncio.sleep(2)
                 return
             dl = download.path
-            new_filename = "video.mp4"
-            new_dl = os.path.join(os.path.dirname(dl), new_filename)
-            dl = new_dl
         except AlreadyDl:
             einfo.cached_dl = True
             msg_r = await reply_message(msg_p, "`Waiting for caching to complete.`")
