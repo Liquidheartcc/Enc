@@ -114,9 +114,11 @@ async def getthumb(event, args, client):
         )
 
 
+import os
+
 async def en_download(event, args, client):
     """
-    Downloads the replied message: to a location (specified) locally
+    Downloads the replied message to a location (specified) locally.
     Available arguments:
       End the args with '/' to specify the folder in which to download and let the bot use its filename
       or:
@@ -135,6 +137,7 @@ async def en_download(event, args, client):
         _dir = None
         loc = None
         link = None
+        new_file_name = None
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
         if message.text and not (is_url(message.text) or is_magnet(message.text)):
@@ -158,6 +161,11 @@ async def en_download(event, args, client):
                 _dir = arg.dir
             if arg.cap and not message.text:
                 loc = message.caption
+            if '-n' in args:
+                new_file_name_index = args.index('-n') + 1
+                if new_file_name_index < len(args):
+                    new_file_name = args[new_file_name_index]
+
         link = message.text if message.text else link
         if not loc:
             loc = rep_event.file.name if not link else link
@@ -172,10 +180,10 @@ async def en_download(event, args, client):
                 download, e, download.file_name, event.sender_id
             )
         f_loc = _dir + loc if not link else _dir + download.file_name
-        new_file_name = "video.mp4"
-        new_f_loc = os.path.join(os.path.dirname(f_loc), new_file_name)
-        os.rename(f_loc, new_f_loc)
-        f_loc = new_f_loc
+        if new_file_name:
+            new_f_loc = os.path.join(os.path.dirname(f_loc), new_file_name)
+            os.rename(f_loc, new_f_loc)
+            f_loc = new_f_loc
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
