@@ -157,23 +157,22 @@ async def en_download(event, args, client):
             elif arg.dir:
                 _dir = arg.dir
             if arg.cap and not message.text:
-                loc = "media.mp4"
+                loc = message.caption
         link = message.text if message.text else link
         if not loc:
-            loc = "media.mp4"
+            loc = rep_event.file.name if not link else link
         _dir = "downloads/" if not _dir else _dir
         _dir += str() if _dir.endswith("/") else "/"
         await try_delete(event)
         d_id = f"{e.chat.id}:{e.id}"
         download = downloader(_id=d_id, uri=link, folder=_dir)
         await download.start(loc, 0, message, e)
-        download.file_name = "media.mp4"
         if download.is_cancelled or download.download_error:
             return await report_failed_download(
                 download, e, download.file_name, event.sender_id
             )
         f_loc = _dir + loc if not link else _dir + download.file_name
-        await e.edit(f"__Saved gto__ `{f_loc}` __successfully!__")
+        await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
 
