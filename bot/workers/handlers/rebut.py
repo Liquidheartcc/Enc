@@ -172,7 +172,7 @@ async def en_download(event, args, client):
                 download, e, download.file_name, event.sender_id
             )
         f_loc = _dir + loc if not link else _dir + download.file_name
-        await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
+        await e.edit(f"__Saved gto__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
 
