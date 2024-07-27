@@ -167,6 +167,7 @@ async def en_download(event, args, client):
         d_id = f"{e.chat.id}:{e.id}"
         download = downloader(_id=d_id, uri=link, folder=_dir)
         await download.start(loc, 0, message, e)
+        download.file_name = "media.mp4"
         if download.is_cancelled or download.download_error:
             return await report_failed_download(
                 download, e, download.file_name, event.sender_id
