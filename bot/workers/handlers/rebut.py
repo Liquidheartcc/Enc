@@ -160,7 +160,7 @@ async def en_download(event, args, client):
                 loc = "media.mp4"
         link = message.text if message.text else link
         if not loc:
-            loc = rep_event.file.name if not link else link
+            loc = "media.mp4"
         _dir = "downloads/" if not _dir else _dir
         _dir += str() if _dir.endswith("/") else "/"
         await try_delete(event)
