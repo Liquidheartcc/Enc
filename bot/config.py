@@ -48,7 +48,7 @@ class Config:
             self.FCODEC = config("FCODEC", default=None)
             self.FFMPEG = config(
                 "FFMPEG",
-                default="""ffmpeg -i "{}" -preset veryfast -vf "subtitles='https\:\/\/mindflayersmirror.xuploads.workers.dev\/1\:\/MFmirror\/logo.ass'" -c:v libx265 -s 854x480 -x265-params 'bframes=8:psy-rd=1:ref=3:aq-mode=3:aq-strength=0.8:deblock=1,1' -metadata 'title=Encoded By JAV STORE' -pix_fmt yuv420p -crf 23 -c:a libopus -b:a 128k -map 0 -ac 2 -vbr 2 -level 4.0 -threads 1 "{}"
+                default="""ffmpeg -i "{}" -preset veryfast -vf "subtitles='https\:\/\/mindflayersmirror.xuploads.workers.dev\/1\:\/MFmirror\/logo.ass'" -c:v libx265 -s 854x480 -x265-params 'bframes=8:psy-rd=1:ref=3:aq-mode=3:aq-strength=0.8:deblock=1,1' -metadata 'title=Encoded By JAV STORE' -pix_fmt yuv420p -crf 23 -c:a libopus -b:a 128k -map 0 -ac 2 -vbr 2 -level 4.0 -threads 5 "{}"
             """)
             self.FL_CAP = config("FILENAME_AS_CAPTION", default=False, cast=bool)
             self.FS_THRESHOLD = config("FLOOD_SLEEP_THRESHOLD", default=600, cast=int)
