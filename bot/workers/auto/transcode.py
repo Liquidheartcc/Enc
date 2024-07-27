@@ -316,9 +316,9 @@ async def thing():
         d_folder, d_fname = path_split(dl)
         d_ext = split_ext(d_fname)[-1]
         _dir = "encode"
-        #file_name, metadata_name = await parse(
-        #    name, d_fname, d_ext, v=v, folder=d_folder, _filter=f
-        #)
+        file_name, metadata_name = await parse(
+            name, d_fname, d_ext, v=v, folder=d_folder, _filter=f
+        )
         out = f"{_dir}/{file_name}"
         title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
 
