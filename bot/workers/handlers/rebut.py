@@ -165,7 +165,7 @@ async def en_download(event, args, client):
         _dir = "downloads/" if not _dir else _dir
         _dir += str() if _dir.endswith("/") else "/"
         await try_delete(event)
-        d_id = f"{(link unavailable)}:{(link unavailable)}"
+        d_id = f"{e.chat.id}:{e.id}"
         download = downloader(_id=d_id, uri=link, folder=_dir)
         await download.start(loc, 0, message, e)
         if download.is_cancelled or download.download_error:
