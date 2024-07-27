@@ -1,6 +1,6 @@
 # [ENC]
 
-<a href="https://dashboard.heroku.com/new-app?template=https://github.com/Liquidheartcc/Enc"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy To Heroku Button"></a>
+**Heavily Modified by SPIDEY**
 
 ### Variables
 
