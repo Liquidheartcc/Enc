@@ -177,6 +177,8 @@ async def en_download(event, args, client):
             new_f_loc = os.path.join(os.path.dirname(f_loc), new_file_name)
             os.rename(f_loc, new_f_loc)
             f_loc = new_f_loc
+        else:
+            f_loc = _dir + loc if not link else _dir + download.file_name
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
