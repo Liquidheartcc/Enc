@@ -1,4 +1,5 @@
 from bot import *
+import asyncio
 from bot.config import _bot, conf
 from bot.fun.emojis import enhearts, enmoji, enmoji2
 from bot.utils.bot_utils import (
@@ -22,6 +23,18 @@ from .dl_helpers import (
     rm_torrent_tag,
 )
 
+custom_filenames = {}
+
+async def set_filename(event, args: str, client, direct=False):
+    user_id = event.sender_id
+    args = event.text.split(maxsplit=1)
+    if len(args) < 2:
+        await event.reply("Please provide a filename.")
+        return
+
+    filename = args[1]
+    custom_filenames[user_id] = filename
+    await event.reply(f"Custom filename set to: {filename}")
 
 class Downloader:
     def __init__(
@@ -67,6 +80,62 @@ class Downloader:
 
     def __str__(self):
         return "#wip"
+
+    async def start(self, dl, file, message="", e="", select=None):
+        try:
+            # Use custom filename if set, otherwise use the original filename
+            self.file_name = custom_filenames.get(self.sender, dl)
+            self.register()
+            if self.qbit:
+                return await self.start3(dl, file, message, e, select)
+            elif self.uri:
+                return await self.start2(dl, file, message, e)
+            await self.log_download()
+            if self.dl_folder:
+                self.path = dl = self.dl_folder + self.file_name
+            if message:
+                self.time = ttt = time.time()
+                media_type = str(message.media)
+                if media_type == "MessageMediaType.DOCUMENT":
+                    media_mssg = "`Downloading a file…`"
+                else:
+                    media_mssg = "`Downloading a video…`"
+                download_task = await pyro.download_media(
+                    message=message,
+                    file_name=dl,
+                    progress=self.progress_for_pyrogram,
+                    progress_args=(pyro, media_mssg, e, ttt),
+                )
+            else:
+                download_task = await pyro.download_media(
+                    message=file,
+                    file_name=dl,
+                )
+            await self.wait()
+            if self.is_cancelled:
+                await self.clean_download()
+            self.un_register()
+            return download_task
+
+        except pyro_errors.BadRequest:
+            await reply.edit(f"`Failed {enmoji2()}\nRetrying in 10 seconds…`")
+            await asyncio.sleep(10)
+            dl_task = await self.start(dl, file, message, e)
+            return dl_task
+
+        except pyro_errors.FloodWait as e:
+            await asyncio.sleep(e.value)
+            await reply.edit(
+                f"`Failed: FloodWait error {enmoji2()}\nRetrying in 10 seconds…`"
+            )
+            await asyncio.sleep(10)
+            dl_task = await self.start(dl, file, message, e)
+            return dl_task
+
+        except Exception:
+            self.un_register()
+            await logger(Exception)
+            return None
 
     def gen_buttons(self):
         # Create a "Cancel" button
