@@ -321,9 +321,6 @@ async def thing():
         )
         out = f"{_dir}/{file_name}"
         title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
-        new_filename = "video.mp4"
-        new_dl = os.path.join(os.path.dirname(dl), new_filename)
-        dl = new_dl
 
         c_n = f"{title} {sn or str()}".strip()
         if einfo.previous and einfo.previous == c_n:
