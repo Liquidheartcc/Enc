@@ -113,7 +113,6 @@ async def getthumb(event, args, client):
             caption=cap,
         )
 
-
 async def en_download(event, args, client):
     """
     Downloads the replied message: to a location (specified) locally
@@ -141,17 +140,17 @@ async def en_download(event, args, client):
             return await message.reply("`Not a valid link`")
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
         if args is not None:
-            arg, args = get_args(
+            arg, unknown_args = get_args(
                 ["--home", "store_true"],
                 ["--cap", "store_true"],
                 "--dir",
                 to_parse=args,
                 get_unknown=True,
             )
-            if args.endswith("/"):
-                _dir = args
-            else:
-                loc = args
+            if unknown_args and unknown_args.endswith("/"):
+                _dir = unknown_args
+            elif unknown_args:
+                loc = unknown_args
             if arg.home:
                 _dir = home_dir
             elif arg.dir:
@@ -163,10 +162,10 @@ async def en_download(event, args, client):
             loc = rep_event.file.name if not link else link
         _dir = "downloads/" if not _dir else _dir
         _dir += str() if _dir.endswith("/") else "/"
-        
-        # Extract filename from command arguments
-        if args and not args.endswith('/'):
-            loc = args.split()[-1]
+
+        # If filename provided in the arguments, use it
+        if unknown_args and not unknown_args.endswith('/'):
+            loc = unknown_args.split()[-1]
 
         await try_delete(event)
         d_id = f"{e.chat.id}:{e.id}"
@@ -178,8 +177,8 @@ async def en_download(event, args, client):
             )
         f_loc = _dir + loc if not link else _dir + download.file_name
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
-    except Exception:
-        await logger(Exception)
+    except Exception as ex:
+        await logger(ex)
 
 async def en_rename(event, args, client):
     """
