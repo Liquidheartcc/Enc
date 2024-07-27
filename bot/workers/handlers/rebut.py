@@ -125,7 +125,6 @@ async def en_download(event, args, client):
       if no other arg is given after dir, bot automatically downloads to given dir with default filename instead.
 
       *path specified directly will be downloaded as a subdir to download folder
-      -n (To specify a new filename.)
     """
     if not user_is_owner(event.sender_id):
         return await event.delete()
@@ -135,18 +134,18 @@ async def en_download(event, args, client):
         _dir = None
         loc = None
         link = None
-        new_filename = None
         rep_event = await event.get_reply_message()
         message = await client.get_messages(event.chat_id, int(rep_event.id))
         if message.text and not (is_url(message.text) or is_magnet(message.text)):
             return await message.reply("`Not a valid link`")
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
+        new_filename = None
         if args is not None:
             arg, args = get_args(
                 ["--home", "store_true"],
                 ["--cap", "store_true"],
                 "--dir",
-                "-n",
+                "--n",
                 to_parse=args,
                 get_unknown=True,
             )
@@ -160,17 +159,11 @@ async def en_download(event, args, client):
                 _dir = arg.dir
             if arg.cap and not message.text:
                 loc = message.caption
-            if "-n" in args:
-                new_filename_index = args.index("-n") + 1
-                if new_filename_index < len(args):
-                    new_filename = args[new_filename_index]
-
+            if arg.n:
+                new_filename = arg.n
         link = message.text if message.text else link
         if not loc:
             loc = rep_event.file.name if not link else link
-        if new_filename:
-            loc = new_filename
-
         _dir = "downloads/" if not _dir else _dir
         _dir += str() if _dir.endswith("/") else "/"
         await try_delete(event)
@@ -181,7 +174,9 @@ async def en_download(event, args, client):
             return await report_failed_download(
                 download, e, download.file_name, event.sender_id
             )
-        f_loc = _dir + loc if not link else _dir + download.file_name
+        f_loc = _dir + (new_filename if new_filename else download.file_name)
+        if new_filename:
+            os.rename(_dir + download.file_name, f_loc)
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
