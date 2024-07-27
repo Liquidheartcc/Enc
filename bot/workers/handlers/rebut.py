@@ -113,16 +113,15 @@ async def getthumb(event, args, client):
             caption=cap,
         )
 
-import os
 
 async def en_download(event, args, client):
     """
-    Downloads the replied message to a specified location locally.
+    Downloads the replied message: to a location (specified) locally
     Available arguments:
-      End the args with '/' to specify the folder in which to download and let the bot use its filename.
+      End the args with '/' to specify the folder in which to download and let the bot use its filename
       or:
         --dir DIR (Must be in double quotes.)
-        --home (To download to the current working directory.)
+        --home (To download to current working directory.)
       --cap (To use download with caption instead of filename.)
       if no other arg is given after dir, bot automatically downloads to given dir with default filename instead.
 
@@ -173,12 +172,11 @@ async def en_download(event, args, client):
                 download, e, download.file_name, event.sender_id
             )
         f_loc = _dir + loc if not link else _dir + download.file_name
-        new_file_name = "video.mp4"
-        if not _dir.endswith("/") and loc and not loc.endswith("/"):
-            new_file_name = loc
-        new_f_loc = os.path.join(os.path.dirname(f_loc), new_file_name)
-        os.rename(f_loc, new_f_loc)
-        f_loc = new_f_loc
+        if not args.endswith("/"):
+            new_file_name = args  # Use the new file name from args
+            new_f_loc = os.path.join(os.path.dirname(f_loc), new_file_name)
+            os.rename(f_loc, new_f_loc)
+            f_loc = new_f_loc
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
