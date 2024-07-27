@@ -148,7 +148,7 @@ async def en_download(event, args, client):
                 to_parse=args,
                 get_unknown=True,
             )
-            if args.endswith("/"):
+            if args and args.endswith("/"):
                 _dir = args
             else:
                 loc = args
@@ -172,7 +172,7 @@ async def en_download(event, args, client):
                 download, e, download.file_name, event.sender_id
             )
         f_loc = _dir + loc if not link else _dir + download.file_name
-        if not args.endswith("/"):
+        if args and not args.endswith("/"):
             new_file_name = args  # Use the new file name from args
             new_f_loc = os.path.join(os.path.dirname(f_loc), new_file_name)
             os.rename(f_loc, new_f_loc)
