@@ -157,7 +157,7 @@ async def en_download(event, args, client):
             elif arg.dir:
                 _dir = arg.dir
             if arg.cap and not message.text:
-                loc = message.caption
+                loc = "media.mp4"
         link = message.text if message.text else link
         if not loc:
             loc = rep_event.file.name if not link else link
