@@ -63,7 +63,7 @@ from .workers.handlers.queue import (
 from .workers.handlers.rebut import (
     en_airing,
     en_anime,
-    en_download,
+    #en_download,
     en_list,
     en_mux,
     en_rename,
