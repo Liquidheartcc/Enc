@@ -1,5 +1,5 @@
 from pyrogram.types import Message
-import re
+
 from bot import asyncio, dl_pause, errors, itertools, queue_lock
 from bot.fun.quips import enquip4
 from bot.utils.ani_utils import qparse
@@ -170,23 +170,6 @@ async def listqueuep(event, args, client):
             await logger(Exception)
         return await event.reply(rply)
 
-import re
-
-def parse_args(args):
-    url_pattern = re.compile(r"(http[s]?://\S+)")
-    match = url_pattern.search(args)
-    if match:
-        url = match.group(0)
-        remaining_args = args.replace(url, "").strip()
-    else:
-        url = None
-        remaining_args = args.strip()
-
-    flag_pattern = re.compile(r"-(\w+)\s+([^\s-]+)")
-    flags = flag_pattern.findall(remaining_args)
-    flag_dict = {flag: value for flag, value in flags}
-
-    return url, flag_dict
 
 async def enleech(event, args: str, client, direct=False):
     """
@@ -200,7 +183,6 @@ async def enleech(event, args: str, client, direct=False):
         -tc caption_tag (tag caption type as…)
         -tf file_tag (tag file_as)
         -v number (tag according to version number)
-        -nn new_name (new name for the downloading file)
     Both flags override /filter & /v
 
     :: filter format-
@@ -211,7 +193,7 @@ async def enleech(event, args: str, client, direct=False):
     user_id = event.sender_id
     if not (user_is_allowed(user_id) or direct):
         return
-    cust_fil = cust_v = new_name = str()
+    cust_fil = cust_v = str()
     mode = "None"
     o_args = None
     queue = get_queue()
@@ -221,27 +203,30 @@ async def enleech(event, args: str, client, direct=False):
     )
     no_dl_spt_msg = "`File to download is…\neither not a video\nor is a batch torrent which is currently not supported.`"
     ukn_err_msg = "`An unknown error occurred, might an internal issue with aria2.\nCheck logs for more info`"
-    
     if args:
         o_args = args
-        url, flags = parse_args(args)
-        if 'rm' in flags or 'tc' in flags or 'tf' in flags:
-            cust_fil = flags.get('rm', 'disabled__')
+        flag, args = get_args(
+            "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+        )
+        if flag.rm or flag.tc or flag.tf:
+            cust_fil = flag.rm or "disabled__"
             cust_fil += str().join(
-                f"\n{flags.get(flag)}" if flag in flags else "\nauto" for flag in ['tf', 'tc']
+                f"\n{x}" if x else "\nauto" for x in [flag.tf, flag.tc]
             )
         else:
-            cust_fil = str_esc(flags.get('f', ''))
-        cust_v = flags.get('v', '')
-        new_name = flags.get('nn', '')
-    
+            cust_fil = str_esc(flag.f)
+        cust_v = flag.v
     try:
         if event.is_reply:
             rep_event = await event.get_reply_message()
             if rep_event.file:
                 await event.reply("**Warning:** `Use /add for files instead.`")
                 return await addqueue(event, o_args, client)
-            if args and args.isdigit():
+            if args:
+                if not args.isdigit():
+                    return await event.reply(
+                        f"**Yeah No.**\n`Error: expected a number but received '{args}'.`"
+                    )
                 args = int(args)
                 async with queue_lock:
                     for _none, _id in zip(
@@ -268,8 +253,6 @@ async def enleech(event, args: str, client, direct=False):
                             await event2.reply(no_dl_spt_msg, quote=True)
                             await asyncio.sleep(5)
                             continue
-                        if new_name:
-                            file.name = new_name
                         already_in_queue = False
                         for item in queue.values():
                             if file.name in item:
@@ -312,7 +295,7 @@ async def enleech(event, args: str, client, direct=False):
                 uri = rep_event.text
                 event = rep_event
         else:
-            uri = url
+            uri = args
 
         if not uri:
             return await event.reply(no_uri_msg)
@@ -324,9 +307,6 @@ async def enleech(event, args: str, client, direct=False):
         if not is_url(uri):
             return await event.reply(no_dl_spt_msg)
         
-        if new_name:
-            file.name = new_name
-
         async with queue_lock:
             queue.update(
                 {
@@ -348,6 +328,7 @@ async def enleech(event, args: str, client, direct=False):
         await logger(Exception)
         await rm_pause(dl_pause)
         return await event.reply(f"An error Occurred:\n - {e}")
+
 
 async def enleech2(event, args: str, client, direct=False):
     """
