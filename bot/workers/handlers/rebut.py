@@ -115,18 +115,14 @@ async def getthumb(event, args, client):
 
 
 async def en_download(event, args, client):
-    """
-    Downloads the replied message: to a location (specified) locally
+    """ Downloads the replied message: to a location (specified) locally
     Available arguments:
-      End the args with '/' to specify the folder in which to download and let the bot use its filename
-      or:
-        --dir DIR (Must be in double quotes.)
-        --home (To download to current working directory.)
-      --cap (To use download with caption instead of filename.)
-      if no other arg is given after dir, bot automatically downloads to given dir with default filename instead.
-
-      *path specified directly will be downloaded as a subdir to download folder
-    """
+    End the args with '/' to specify the folder in which to download and let the bot use its filename or:
+    --dir DIR (Must be in double quotes.)
+    --home (To download to current working directory.)
+    --cap (To use download with caption instead of filename.)
+    if no other arg is given after dir, bot automatically downloads to given dir with default filename instead.
+    *path specified directly will be downloaded as a subdir to download folder """
     if not user_is_owner(event.sender_id):
         return await event.delete()
     if not event.is_reply:
@@ -135,8 +131,9 @@ async def en_download(event, args, client):
         _dir = None
         loc = None
         link = None
+        filename_from_download = None
         rep_event = await event.get_reply_message()
-        message = await client.get_messages(event.chat_id, int(rep_event.id))
+        message = await client.get_messages(event.chat_id, int((link unavailable)))
         if message.text and not (is_url(message.text) or is_magnet(message.text)):
             return await message.reply("`Not a valid link`")
         e = await message.reply(f"{enmoji()} `Downloading…`", quote=True)
@@ -158,13 +155,17 @@ async def en_download(event, args, client):
                 _dir = arg.dir
             if arg.cap and not message.text:
                 loc = message.caption
-        link = message.text if message.text else link
+            link = message.text if message.text else link
+            if args.startswith("/download "):
+                filename_from_download = args.split("/download ", 1)[1]
+        if filename_from_download:
+            loc = filename_from_download
         if not loc:
             loc = rep_event.file.name if not link else link
         _dir = "downloads/" if not _dir else _dir
         _dir += str() if _dir.endswith("/") else "/"
         await try_delete(event)
-        d_id = f"{e.chat.id}:{e.id}"
+        d_id = f"{(link unavailable)}:{(link unavailable)}"
         download = downloader(_id=d_id, uri=link, folder=_dir)
         await download.start(loc, 0, message, e)
         if download.is_cancelled or download.download_error:
@@ -175,7 +176,6 @@ async def en_download(event, args, client):
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
-
 
 async def en_rename(event, args, client):
     """
