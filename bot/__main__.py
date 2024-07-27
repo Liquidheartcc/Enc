@@ -16,7 +16,6 @@
 import asyncio
 import itertools
 
-from .workers.downloaders.download import set_filename
 from pyrogram import filters
 
 from . import LOGS, conf, events, pyro, re, tele
@@ -302,9 +301,6 @@ async def _(e):
 async def _(e):
     await event_handler(e, enleech, pyro)
 
-@tele.on(events.NewMessage(pattern=command(["setfilename"])))
-async def _(e):
-    await event_handler(e, set_filename, pyro)
 
 @tele.on(events.NewMessage(pattern=command(["qbleech", "ql"])))
 async def _(e):
