@@ -170,7 +170,6 @@ async def listqueuep(event, args, client):
             await logger(Exception)
         return await event.reply(rply)
 
-
 async def enleech(event, args: str, client, direct=False):
     """
     Adds a link or torrent link to encoding queue:
@@ -183,6 +182,7 @@ async def enleech(event, args: str, client, direct=False):
         -tc caption_tag (tag caption type as…)
         -tf file_tag (tag file_as)
         -v number (tag according to version number)
+        -nn new_name (new name for the downloading file)
     Both flags override /filter & /v
 
     :: filter format-
@@ -193,7 +193,7 @@ async def enleech(event, args: str, client, direct=False):
     user_id = event.sender_id
     if not (user_is_allowed(user_id) or direct):
         return
-    cust_fil = cust_v = str()
+    cust_fil = cust_v = new_name = str()
     mode = "None"
     o_args = None
     queue = get_queue()
@@ -206,7 +206,7 @@ async def enleech(event, args: str, client, direct=False):
     if args:
         o_args = args
         flag, args = get_args(
-            "-f", "-rm", "-tc", "-tf", "-v", to_parse=args, get_unknown=True
+            "-f", "-rm", "-tc", "-tf", "-v", "-nn", to_parse=args, get_unknown=True
         )
         if flag.rm or flag.tc or flag.tf:
             cust_fil = flag.rm or "disabled__"
@@ -216,6 +216,7 @@ async def enleech(event, args: str, client, direct=False):
         else:
             cust_fil = str_esc(flag.f)
         cust_v = flag.v
+        new_name = flag.nn
     try:
         if event.is_reply:
             rep_event = await event.get_reply_message()
@@ -253,6 +254,8 @@ async def enleech(event, args: str, client, direct=False):
                             await event2.reply(no_dl_spt_msg, quote=True)
                             await asyncio.sleep(5)
                             continue
+                        if new_name:
+                            file.name = new_name
                         already_in_queue = False
                         for item in queue.values():
                             if file.name in item:
@@ -307,6 +310,9 @@ async def enleech(event, args: str, client, direct=False):
         if not is_url(uri):
             return await event.reply(no_dl_spt_msg)
         
+        if new_name:
+            file.name = new_name
+
         async with queue_lock:
             queue.update(
                 {
@@ -328,7 +334,6 @@ async def enleech(event, args: str, client, direct=False):
         await logger(Exception)
         await rm_pause(dl_pause)
         return await event.reply(f"An error Occurred:\n - {e}")
-
 
 async def enleech2(event, args: str, client, direct=False):
     """
