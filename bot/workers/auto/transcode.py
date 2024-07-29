@@ -1,6 +1,3 @@
-import os
-import time
-import pickle
 from os.path import split as path_split
 from os.path import splitext as split_ext
 from shutil import copy2 as copy_file
@@ -24,7 +21,6 @@ from bot.utils.log_utils import logger
 from bot.utils.msg_utils import (
     bc_msg,
     enpause,
-    get_args,
     get_cached,
     reply_message,
     report_encode_status,
@@ -36,39 +32,6 @@ from bot.workers.downloaders.download import Downloader as downloader
 from bot.workers.encoders.encode import Encoder as encoder
 from bot.workers.uploaders.dump import dumpdl
 from bot.workers.uploaders.upload import Uploader as uploader
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-
-# Constants for Google Drive API
-SCOPES = ['https://www.googleapis.com/auth/drive.file']
-CREDENTIALS_FILE_PATH = 'bot/credentials.json'
-TOKEN_PICKLE_FILE_PATH = 'bot/token.pickle'
-GDRIVE_ID = '1B7B15U7a14mWpPKvKvMe6vRXAg10zpL2'
-
-def upload_to_gdrive(file_path, folder_id):
-    """Uploads a file to Google Drive and returns the web view link."""
-    creds = None
-    if os.path.exists(TOKEN_PICKLE_FILE_PATH):
-        with open(TOKEN_PICKLE_FILE_PATH, 'rb') as token:
-            creds = pickle.load(token)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE_PATH, SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open(TOKEN_PICKLE_FILE_PATH, 'wb') as token:
-            pickle.dump(creds, token)
-    service = build('drive', 'v3', credentials=creds)
-    media = MediaFileUpload(file_path, resumable=True)
-    file_metadata = {
-        'name': os.path.basename(file_path),
-        'parents': [folder_id],
-    }
-    file = service.files().create(body=file_metadata, media_body=media, fields='id,webViewLink').execute()
-    return file.get("webViewLink")
 
 thumb2 = "thumb2.jpg"
 
@@ -108,14 +71,14 @@ async def another(text, title, epi, sea, metadata, dl):
     return text
 
 
-async def forward_(name, out, ds, mi, f):
+async def forward_(name, out, ds, mi, f, ani):
     fb = conf.FBANNER
     fc = conf.FCHANNEL
     fs = conf.FSTICKER
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, conf.FCODEC, mi, _filter=f, evt=fb)
+        pic_id, f_msg = await f_post(name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb)
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
@@ -193,7 +156,9 @@ async def thing():
         download = None
         log_channel = conf.LOG_CHANNEL
         name, u_msg, v_f = list(queue.values())[0]
-        v, f, m = v_f
+        v, f, m, n, au = v_f
+        ani = au[0]
+        einfo.uri = au[1]
         sender_id, message = u_msg
         if not message:
             message = await pyro.get_messages(chat_id, msg_id)
@@ -205,6 +170,7 @@ async def thing():
             einfo.batch = einfo.qbit = True
             file_name, index, name = get_downloadable_batch(queue_id)
             einfo.select = index
+            n = None  # To prevent hell from breaking loose
             if name is None:
                 einfo.batch = None
                 skip(queue_id)
@@ -213,7 +179,11 @@ async def thing():
                 await asyncio.sleep(2)
                 return
 
-        msg_p = await message.reply("`Download Pending…`", quote=True)
+        try:
+            msg_p = await message.reply("`Download Pending…`", quote=True)
+        except Exception:
+            msg_p = await pyro.send_message(chat_id, "`Download Pending…`")
+            message = msg_p if einfo.uri else message
         await asyncio.sleep(2)
         msg_t = await tele.edit_message(
             chat_id, msg_p.id, "`Waiting for download handler…`"
@@ -238,31 +208,11 @@ async def thing():
             op = None
         try:
             dl = "downloads/" + name
-            if message.text:
-                if message.text.startswith("/"):
-                    einfo.uri = message.text.split(" ", maxsplit=1)[1].strip()
-                else:
-                    einfo.uri = message.text
-                if m[0] == "aria2":
-                    args_list = ["-f", "-rm", "-tc", "-tf", "-v"]
-                else:
-                    args_list = [
-                        "-f",
-                        "-n",
-                        "-rm",
-                        "-s",
-                        "-tc",
-                        "-tf",
-                        "-v",
-                        ["-b", "store_true"],
-                        ["-y", "store_true"],
-                    ]
+            if einfo.uri:
+                if m[0] == "qbit":
                     einfo.qbit = True
                     if m[1].split()[0].lower() == "select.":
                         einfo.select = int(m[1].split()[1])
-                einfo.uri = (
-                    get_args(*args_list, to_parse=einfo.uri, get_unknown=True)
-                )[1]
 
             if await cache_dl(check=True):
                 raise (AlreadyDl)
@@ -317,10 +267,19 @@ async def thing():
         d_ext = split_ext(d_fname)[-1]
         _dir = "encode"
         file_name, metadata_name = await parse(
-            name, d_fname, d_ext, v=v, folder=d_folder, _filter=f
+            name,
+            d_fname,
+            d_ext,
+            anilist=ani,
+            v=v,
+            folder=d_folder,
+            _filter=f,
+            direct=n,
         )
         out = f"{_dir}/{file_name}"
-        title, epi, sn, rlsgrp = await dynamicthumb(name, _filter=f)
+        title, epi, sn, rlsgrp = await dynamicthumb(
+            name, anilist=(not n or ani), _filter=f
+        )
 
         c_n = f"{title} {sn or str()}".strip()
         if einfo.previous and einfo.previous == c_n:
@@ -415,113 +374,77 @@ async def thing():
 
         sut = time.time()
         fname = path_split(out)[1]
-        pcap = await custcap(name, fname, ver=v, encoder=conf.ENCODER, _filter=f)
+        pcap = await custcap(
+            name, fname, anilist=ani, ver=v, encoder=conf.ENCODER, _filter=f, direct=n
+        )
         await op.edit(f"`Uploading…` `{out}`") if op else None
-
-        # Check file size
-        size_of_file = os.path.getsize(out)
-        if size_of_file > 2126000000:  # 2126000000 bytes ≈ 2GB
-            folder_id = GDRIVE_ID
-            reply = f"**📂 Uploading to GDrive...!**"
-            await msg_p.edit(reply)
+        upload = uploader(sender_id, _id)
+        up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
+        if upload.is_cancelled:
+            m = f"`Upload of {out} was cancelled`"
+            if sender_id != upload.canceller:
+                canceller = await pyro.get_users(upload.canceller)
+                # m += f"by [{canceller.first_name}](tg://user?id={upload.canceller})"
+                m += f"by {canceller.mention()}"
+            m += "!"
+            await msg_p.edit(m)
             if op:
-                await op.edit(reply)
-            gb = size_of_file / (1024 * 1024 * 1024)
-            gb = round(gb, 2)
-            try:
-                download_url = upload_to_gdrive(out, folder_id)
-                chain_msg = await reply_message(
-                    message=message,
-                    text=f"**📂 Upload Successful!** \n\n**{file_name}** \n**Size: {gb} GB** \n**Google Drive:** {download_url}",
-                    quote=True,
-                )
-            except Exception as e:
-                chain_msg = await reply_message(
-                    message=message,
-                    text=f"Uploading of `{file_name}` to Google Drive Failed: {str(e)}",
-                    quote=True,
-                )
+                await op.edit(m)
             skip(queue_id)
             mark_file_as_done(einfo.select, queue_id)
             await save2db()
             await save2db("batches")
-            await msg_p.delete()
-            await op.delete() if op else None
             if download:
                 await download.clean_download()
             s_remove(thumb2, dl, out)
             return
-        else:
-            upload = uploader(sender_id, _id)
-            up = await upload.start(msg_t.chat_id, out, msg_p, thumb2, pcap, message)
-            if upload.is_cancelled:
-                m = f"`Upload of {out} was cancelled`"
-                if sender_id != upload.canceller:
-                    canceller = await pyro.get_users(upload.canceller)
-                    m += f"by {canceller.mention()}"
-                m += "!"
-                await msg_p.edit(m)
-                if op:
-                    await op.edit(m)
-                skip(queue_id)
-                mark_file_as_done(einfo.select, queue_id)
-                await save2db()
-                await save2db("batches")
-                if download:
-                    await download.clean_download()
-                s_remove(thumb2, dl, out)
-                return
-            eut = time.time()
-            utime = tf(eut - sut)
+        eut = time.time()
+        utime = tf(eut - sut)
 
-            await msg_p.delete()
-            await op.delete() if op else None
-            await up.copy(chat_id=log_channel) if op else None
+        await msg_p.delete()
+        await op.delete() if op else None
+        await up.copy(chat_id=log_channel) if op else None
 
-            org_s = size_of(dl)
-            out_s = size_of(out)
-            pe = 100 - ((out_s / org_s) * 100)
-            per = str(f"{pe:.2f}") + "%"
-            mux_msg = f"Muxed in `{mtime}`\n" if mux_args else str()
+        org_s = size_of(dl)
+        out_s = size_of(out)
+        pe = 100 - ((out_s / org_s) * 100)
+        per = str(f"{pe:.2f}") + "%"
+        mux_msg = f"Muxed in `{mtime}`\n" if mux_args else str()
 
-            text = str()
-            mi = await info(dl)
-            mi2 = await info(out)
-            forward_task = asyncio.create_task(forward_(name, out, up, mi, f))
-        
-            text = ""
-            if mi:
-                text += f"\n\n🎞️ **Mediainfo:** **[(Source)]({mi})** | **[(Encoded)]({mi2})**"
-            else:
-                text += f"\n\n🎞️ **Mediainfo:** **N/A**"
-            #mi_msg = await up.reply(
-                #text,
-                #disable_web_page_preview=True,
-                #quote=True,
-            #)
-            #await mi_msg.copy(chat_id=log_channel) if op else None
+        text = str()
+        mi = await info(dl)
+        forward_task = asyncio.create_task(forward_(name, out, up, mi, f, ani))
 
-            st_msg = await up.reply(
-                f"🚀 **Encode Stats:**\n\nOriginal Size: "
-                f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
-                f"Encoded Percentage: `{per}`\n\n"
-                f"{'Cached' if einfo.cached_dl else 'Downloaded'} in `{dtime}`\n"
-                f"Encoded in `{etime}`\n{mux_msg}Uploaded in `{utime}`"
-                f"{text}",
-                disable_web_page_preview=True,
-                quote=True,
-            )
-            await st_msg.copy(chat_id=log_channel) if op else None
-            await forward_task
+        text += f"**Source:** `[{rlsgrp}]`"
+        if mi:
+            text += f"\n\nMediainfo: **[(Source)]({mi})**"
+        mi_msg = await up.reply(
+            text,
+            disable_web_page_preview=True,
+            quote=True,
+        )
+        await mi_msg.copy(chat_id=log_channel) if op else None
 
-            skip(queue_id)
-            mark_file_as_done(einfo.select, queue_id)
-            await save2db()
-            await save2db("batches")
-            s_remove(thumb2)
-            if download:
-                await download.clean_download()
-            s_remove(dl, out)
+        st_msg = await up.reply(
+            f"**Encode Stats:**\n\nOriginal Size: "
+            f"`{hbs(org_s)}`\nEncoded Size: `{hbs(out_s)}`\n"
+            f"Encoded Percentage: `{per}`\n\n"
+            f"{'Cached' if einfo.cached_dl else 'Downloaded'} in `{dtime}`\n"
+            f"Encoded in `{etime}`\n{mux_msg}Uploaded in `{utime}`",
+            disable_web_page_preview=True,
+            quote=True,
+        )
+        await st_msg.copy(chat_id=log_channel) if op else None
+        await forward_task
+
+        skip(queue_id)
+        mark_file_as_done(einfo.select, queue_id)
+        await save2db()
+        await save2db("batches")
+        s_remove(thumb2)
+        if download:
+            await download.clean_download()
+        s_remove(dl, out)
 
     except Exception:
         await logger(Exception)
