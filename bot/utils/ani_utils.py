@@ -323,6 +323,7 @@ async def parse(
     folder="downloads/",
     _filter=None,
     ccodec=None,
+    direct=None,
 ):
     try:
         if _file:
@@ -396,7 +397,10 @@ async def custcap(
     encoder=None,
     _filter=None,
     ccodec=None,
+    direct=None,
 ):
+    if direct:
+        return f"`{direct}`"
     if conf.FL_CAP:
         return f"`{fname}`"
     if not conf.EXT_CAP:
@@ -435,8 +439,8 @@ async def simplecap(
     return caption
 
 
-async def qparse(name, ver=None, fil=None):
-    return (await parse(name, v=ver, _filter=fil))[0]
+async def qparse(name, ver=None, fil=None, rdir=None, ani=True):
+    return (await parse(name, anilist=ani, v=ver, _filter=fil, direct=rdir))[0]
 
 
 async def qparse_t(name, ver=None, fil=None):
@@ -446,7 +450,7 @@ async def qparse_t(name, ver=None, fil=None):
     )
 
 
-async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
+async def f_post(name, out, anilist=True, fcodec=None, mi=None, _filter=None, evt=True):
     if conf.NO_BANNER:
         return None, None
     try:
@@ -476,7 +480,7 @@ async def f_post(name, out, fcodec=None, mi=None, _filter=None, evt=True):
         codec = fcodec if fcodec else await get_codec()
 
         try:
-            if file_exists(parse_file):
+            if file_exists(parse_file) or not anilist:
                 raise Exception("Parsing turned off")
             json = await get_ani_info(title)
             if sn:
