@@ -100,10 +100,12 @@ async def status(event, args, client):
 async def start(event, args, client):
     """A function for the start command, accepts no arguments yet!"""
     currentTime = tf(time.time() - botStartTime)
+    cpuUsage = psutil.cpu_percent(interval=0.5)
+    memory = psutil.virtual_memory()
     msg = ""
-    msg1 = f"Greetings `{event.sender.first_name}`\n"
+    msg1 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 `{event.sender.first_name}`\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄\n"
     msg2 = (
-        f"{msg1}➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active Now`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%` • 𝖱𝖠𝖬: `{memory.percent}%`"
+        f"{msg1}➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%` • 𝖱𝖠𝖬: `{memory.percent}%`"
     )
     msg3 = f"{msg2}\nand by the way you're a temporary user"
     user = event.sender_id
