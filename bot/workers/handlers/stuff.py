@@ -120,14 +120,16 @@ async def start(event, args, client):
 
     if not msg:
         msg = msg2
-    await event.reply(
-        file="https://te.legra.ph/file/c8c7f77b821d949ed45f4.jpg",
+    
+    # Send the photo with caption
+    await event.client.send_file(
+        event.chat_id,
+        'https://cdn.wallpapersafari.com/55/17/8pOcDt.jpg',  # replace with the actual path to your photo
         caption=msg,
         buttons=[
             [Button.inline("Help", data="ihelp")],
-        ],
+        ]
     )
-
 
 async def help(event, args, client):
     return await start(event, args, client)
