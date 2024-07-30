@@ -1,11 +1,11 @@
 import os
 import shutil
 import time
-
+import random
 import psutil
 
 from bot import Button, botStartTime, dt, subprocess, version_file
-from bot.config import _bot, conf
+from bot.config import _bot, conf, JPG_FILES
 from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_user
 from bot.utils.bot_utils import time_formatter as tf
@@ -121,16 +121,19 @@ async def start(event, args, client):
     if not msg:
         msg = msg2
     
-    # Send the photo with caption
+    # Choose a random photo
+    random_photo = random.choice(JPG_FILES)
+
+    # Send the random photo with caption
     await event.client.send_file(
         event.chat_id,
-        'https://cdn.wallpapersafari.com/55/17/8pOcDt.jpg',  # replace with the actual path to your photo
+        random_photo,
         caption=msg,
         buttons=[
             [Button.inline("Help", data="ihelp")],
         ]
     )
-
+    
 async def help(event, args, client):
     return await start(event, args, client)
 
