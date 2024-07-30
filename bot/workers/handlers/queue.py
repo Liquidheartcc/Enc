@@ -263,6 +263,10 @@ async def enleech(event, args: str, client, direct=False):
                             await event2.reply(f"`{file.error}`", quote=True)
                             await asyncio.sleep(10)
                             continue
+                        if not is_video_file(file.name):
+                            await event2.reply(no_dl_spt_msg, quote=True)
+                            await asyncio.sleep(5)
+                            continue
                         already_in_queue = False
                         for item in queue.values():
                             if file.name in item:
@@ -316,6 +320,8 @@ async def enleech(event, args: str, client, direct=False):
         file = await get_leech_name(uri)
         if file.error:
             return await event.reply(f"`{file.error}`")
+        if not is_video_file(file.name):
+            return await event.reply(no_dl_spt_msg)
         for item in queue.values():
             if file.name in item:
                 return await event.reply(
@@ -395,7 +401,6 @@ async def enleech2(event, args: str, client, direct=False):
         flag, args = get_args(
             "-d",
             "-f",
-            "-n",
             "-rm",
             "-n",
             "-s",
