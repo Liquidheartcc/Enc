@@ -5,7 +5,7 @@ import random
 import psutil
 
 from bot import Button, botStartTime, dt, subprocess, version_file
-from bot.config import _bot, conf, JPG_FILES
+from bot.config import _bot, conf
 from bot.fun.emojis import enmoji
 from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_user
 from bot.utils.bot_utils import time_formatter as tf
@@ -120,9 +120,11 @@ async def start(event, args, client):
 
     if not msg:
         msg = msg2
+
+    JPG_FILES = ["https://cdn.wallpapersafari.com/55/17/8pOcDt.jpg https://cdn.wallpapersafari.com/29/85/GBuMlW.jpg https://images.hdqwalls.com/wallpapers/millie-bobby-brown-in-damsel-movie-nd.jpg https://images.hdqwalls.com/wallpapers/godzilla-king-of-the-monsters-8k-m7.jpg https://images.hdqwalls.com/wallpapers/millie-bobby-brown-as-elodie-in-damsel-ve.jpg https://images.hdqwalls.com/wallpapers/millie-bobby-brown-florence-by-mills-x-about-you-campaign-5k-em.jpg https://images.hdqwalls.com/wallpapers/millie-bobby-brown-2020-n9.jpg https://images.hdqwalls.com/wallpapers/2021-sadie-sink-scrill-davis-for-flaunt-magazine-4k-cj.jpg https://images.hdqwalls.com/wallpapers/sadie-sink-armani-beauty-2023-67.jpg https://images.hdqwalls.com/wallpapers/sadie-sink-chopard-happy-diamonds-4k-r4.jpg https://images.hdqwalls.com/wallpapers/sadie-sink-armani-beauty-2023-5k-u7.jpg https://images.hdqwalls.com/wallpapers/natalia-dyer-4k-iq.jpg https://images.hdqwalls.com/wallpapers/godzilla-x-kong-the-new-empire-2024-4k-d3.jpg https://images.hdqwalls.com/wallpapers/godzilla-minus-one-4k-d9.jpg"]
     
     # Choose a random photo
-    random_photo = random.choice(JPG_FILES)
+    random_photo = random.choice(JPG_FILES.split())
 
     # Send the random photo with caption
     await event.client.send_file(
