@@ -133,12 +133,13 @@ async def help(event, args, client):
 
 
 async def ihelp(event):
+    priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
     await event.edit(
-        "**⚙️ An ENCODER BOT**\n\n+"
-        "It Encodes Videos With your Custom FFMPEG or Handbrake-CLI or MKVtoolnix settings."
-        "\nEncode in Multiple Resolution, Such as 1080p, 720p, 480p.\n"
-        "Supports Mux and Re-Mux Settings"
-        "\nDirect Link/Forward Files Processing."
+        "**⚙️ An ENCODER BOT**\n\n"
+        "➟ It Encodes Videos With your Custom FFMPEG or Handbrake-CLI or MKVtoolnix settings."
+        "\n➟ Encode in Multiple Resolution.\n\t• 1080p  • 720p  • 480p.\n"
+        "➟ Support Mux and Re-Mux Settings\n"
+        "➟ Direct Link/Forward Files Processing."
         "\n\n⭐ Owned By [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]})",
         buttons=[
             [Button.inline("🔙 Back", data="beck")],
