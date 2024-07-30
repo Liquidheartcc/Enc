@@ -121,10 +121,10 @@ async def start(event, args, client):
     if not msg:
         msg = msg2
 
-    JPG_FILES = ["https://cdn.wallpapersafari.com/55/17/8pOcDt.jpg", "https://cdn.wallpapersafari.com/29/85/GBuMlW.jpg", "https://images.hdqwalls.com/wallpapers/millie-bobby-brown-in-damsel-movie-nd.jpg", "https://images.hdqwalls.com/wallpapers/godzilla-king-of-the-monsters-8k-m7.jpg", "https://images.hdqwalls.com/wallpapers/millie-bobby-brown-as-elodie-in-damsel-ve.jpg", "https://images.hdqwalls.com/wallpapers/millie-bobby-brown-florence-by-mills-x-about-you-campaign-5k-em.jpg", "https://images.hdqwalls.com/wallpapers/millie-bobby-brown-2020-n9.jpg", "https://images.hdqwalls.com/wallpapers/2021-sadie-sink-scrill-davis-for-flaunt-magazine-4k-cj.jpg", "https://images.hdqwalls.com/wallpapers/sadie-sink-armani-beauty-2023-67.jpg", "https://images.hdqwalls.com/wallpapers/sadie-sink-chopard-happy-diamonds-4k-r4.jpg", "https://images.hdqwalls.com/wallpapers/sadie-sink-armani-beauty-2023-5k-u7.jpg", "https://images.hdqwalls.com/wallpapers/natalia-dyer-4k-iq.jpg", "https://images.hdqwalls.com/wallpapers/godzilla-x-kong-the-new-empire-2024-4k-d3.jpg", "https://images.hdqwalls.com/wallpapers/godzilla-minus-one-4k-d9.jpg"]
-    
+    JPG_FILES = "https://te.legra.ph/file/134bc42d6583f3dda2b42.jpg https://te.legra.ph/file/3378bb55bf004c7b9ce55.jpg https://te.legra.ph/file/c9d532443ebbf7d705572.jpg https://te.legra.ph/file/f84a5cd872c945b981caf.jpg https://te.legra.ph/file/f50388d50578478583396.jpg https://te.legra.ph/file/28107d3afb0ad1caa9afb.jpg https://te.legra.ph/file/df621ee794c45171c2b58.jpg https://te.legra.ph/file/eb382dd3f96304631d29c.jpg https://te.legra.ph/file/b84b178964984b5930abd.jpg https://te.legra.ph/file/d7b6648cc46dddc643e7f.jpg https://te.legra.ph/file/016eb6524c1bf589297e5.jpg https://te.legra.ph/file/26c311ba26889f63096b1.jpg https://te.legra.ph/file/ccbf7b343cf0f4c9b8aec.jpg https://te.legra.ph/file/ff2b36d9ac79e93c613f2.jpg"
+                 
     # Choose a random photo
-    random_photo = random.choice(JPG_FILES)
+    random_photo = random.choice(JPG_FILES.split())
 
     # Send the random photo with caption
     await event.client.send_file(
