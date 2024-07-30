@@ -90,6 +90,8 @@ class Config:
             print(traceback.format_exc())
             exit()
 
+JPG_FILES = ["https://cdn.wallpapersafari.com/55/17/8pOcDt.jpg https://cdn.wallpapersafari.com/29/85/GBuMlW.jpg https://images.hdqwalls.com/wallpapers/millie-bobby-brown-in-damsel-movie-nd.jpg https://images.hdqwalls.com/wallpapers/godzilla-king-of-the-monsters-8k-m7.jpg https://images.hdqwalls.com/wallpapers/millie-bobby-brown-as-elodie-in-damsel-ve.jpg https://images.hdqwalls.com/wallpapers/millie-bobby-brown-florence-by-mills-x-about-you-campaign-5k-em.jpg https://images.hdqwalls.com/wallpapers/millie-bobby-brown-2020-n9.jpg https://images.hdqwalls.com/wallpapers/2021-sadie-sink-scrill-davis-for-flaunt-magazine-4k-cj.jpg https://images.hdqwalls.com/wallpapers/sadie-sink-armani-beauty-2023-67.jpg https://images.hdqwalls.com/wallpapers/sadie-sink-chopard-happy-diamonds-4k-r4.jpg https://images.hdqwalls.com/wallpapers/sadie-sink-armani-beauty-2023-5k-u7.jpg https://images.hdqwalls.com/wallpapers/natalia-dyer-4k-iq.jpg https://images.hdqwalls.com/wallpapers/godzilla-x-kong-the-new-empire-2024-4k-d3.jpg https://images.hdqwalls.com/wallpapers/godzilla-minus-one-4k-d9.jpg"]
+
 
 class Runtime_Config:
     # will slowly replace the Var_list class in utils.bot_utils
