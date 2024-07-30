@@ -134,14 +134,13 @@ async def help(event, args, client):
 
 async def ihelp(event):
     await event.edit(
-        "**⛩️ An Encode bot**\n\n+"
-        "This bot encodes videos With your custom ffmpeg or handbrake-cli settings."
-        "\n+Easy to Use (Depends)\n"
-        "-Due to your custom Settings & hosting server bot may or may not take a long time to encode"
-        ".\n\nJust Forward a Video…/videos"
-        "\n\nFor available commands click the Commands button below.",
+        "**⚙️ An ENCODER BOT**\n\n+"
+        "It Encodes Videos With your Custom FFMPEG or Handbrake-CLI or MKVtoolnix settings."
+        "\nEncode in Multiple Resolution, Such as 1080p, 720p, 480p.\n"
+        "Supports Mux and Re-Mux Settings"
+        "\nDirect Link/Forward Files Processing."
+        "\n\n⭐ Owned By [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]})",
         buttons=[
-            [Button.inline("Commands", data="icommands")],
             [Button.inline("🔙 Back", data="beck")],
         ],
     )
