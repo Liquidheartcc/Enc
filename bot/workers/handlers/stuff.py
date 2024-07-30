@@ -103,11 +103,11 @@ async def start(event, args, client):
     cpuUsage = psutil.cpu_percent(interval=0.5)
     memory = psutil.virtual_memory()
     msg = ""
-    msg1 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 `{event.sender.first_name}`\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄\n\n"
+    msg1 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄\n\n"
     msg2 = (
         f"{msg1}➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%`  |  𝖱𝖠𝖬: `{memory.percent}%`"
     )
-    msg3 = f"{msg2}\nand by the way you're a temporary user"
+    msg3 = f"{msg2}\n𝖺𝗇𝖽 𝖡𝗒 𝗍𝗁𝖾 𝗐𝖺𝗒 𝖸𝗈𝗎'𝗋𝖾 𝖺 𝖳𝖾𝗆𝗉𝗈𝗋𝖺𝗋𝗒 𝖴𝗌𝖾𝗋!"
     user = event.sender_id
     if not user_is_owner(user) and event.is_private:
         if not pm_is_allowed(in_pm=True):
@@ -116,9 +116,9 @@ async def start(event, args, client):
         msg = msg3
     elif not user_is_allowed(user):
         priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
-        msg = f"{msg1}You're not allowed access to this bot"
-        msg += f"\nAsk [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
-        msg += "(nicely) to grant you access."
+        msg = f"{msg1}𝖸𝗈𝗎'𝗋𝖾 𝖭𝗈𝗍 𝖠𝗅𝗅𝗈𝗐𝖾𝖽 𝖠𝖼𝖼𝖾𝗌𝗌 𝗍𝗈 𝗍𝗁𝗂𝗌 𝖡𝗈𝗍!"
+        msg += f"\n𝖠𝗌𝗄 [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
+        msg += "(𝗇𝗂𝖼𝖾𝗅𝗒) 𝗍𝗈 𝖦𝗋𝖺𝗇𝗍 𝗒𝗈𝗎 𝖠𝖼𝖼𝖾𝗌𝗌."
 
     if not msg:
         msg = msg2
@@ -145,12 +145,12 @@ async def help(event, args, client):
 async def ihelp(event):
     priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
     await event.edit(
-        "**⚙️ An ENCODER BOT**\n\n"
-        "➟ It Encodes Videos With your Custom FFMPEG or Handbrake-CLI or MKVtoolnix settings."
-        "\n➟ Encode in Multiple Resolution.\n\t\t• 1080p  • 720p  • 480p\n"
-        "➟ Support Mux and Re-Mux Settings\n"
-        "➟ Direct Link/Forward Files Processing."
-        f"\n\n⭐ Owned By [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]})",
+        "**⚙️ 𝖠𝗇 𝖤𝖭𝖢𝖮𝖣𝖤𝖱 𝖡𝖮𝖳**\n\n"
+        "➟ 𝖨𝗍 𝖤𝗇𝖼𝗈𝖽𝖾𝗌 𝖵𝗂𝖽𝖾𝗈𝗌 𝖶𝗂𝗍𝗁 𝗒𝗈𝗎𝗋 𝖢𝗎𝗌𝗍𝗈𝗆 𝖥𝖥𝖬𝖯𝖤𝖦 𝗈𝗋 𝖧𝖺𝗇𝖽𝖻𝗋𝖺𝗄𝖾-𝖢𝖫𝖨 𝗈𝗋 𝖬𝖪𝖵𝗍𝗈𝗈𝗅𝗇𝗂𝗑 𝗌𝖾𝗍𝗍𝗂𝗇𝗀𝗌."
+        "\n➟ 𝖤𝗇𝖼𝗈𝖽𝖾 𝗂𝗇 𝖬𝗎𝗅𝗍𝗂𝗉𝗅𝖾 𝖱𝖾𝗌𝗈𝗅𝗎𝗍𝗂𝗈𝗇.\n\t\t• 1080𝗉  • 720𝗉  • 480𝗉\n"
+        "➟ 𝖲𝗎𝗉𝗉𝗈𝗋𝗍 𝖬𝗎𝗑 𝖺𝗇𝖽 𝖱𝖾-𝖬𝗎𝗑 𝖲𝖾𝗍𝗍𝗂𝗇𝗀𝗌.\n"
+        "➟ 𝖣𝗂𝗋𝖾𝖼𝗍 𝖫𝗂𝗇𝗄/𝖥𝗈𝗋𝗐𝖺𝗋𝖽 𝖥𝗂𝗅𝖾𝗌 𝖯𝗋𝗈𝖼𝖾𝗌𝗌𝗂𝗇𝗀."
+        f"\n\n⭐ 𝖮𝗐𝗇𝖾𝖽 𝖡𝗒 [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]})",
         buttons=[
             [Button.inline("🔙 Back", data="beck")],
         ],
@@ -161,18 +161,18 @@ async def beck(event):
     sender = event.query.user_id
     currentTime = tf(time.time() - botStartTime)
     msg = ""
-    msg1 = f"Greetings {event.sender.first_name}\n\n"
+    msg1 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄\n\n"
     msg2 = (
-        f"{msg1}➙ UPTIME: `{currentTime}`\n➙ STATUS: `Active Now`/n⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅"
+        f"{msg1}➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%`  |  𝖱𝖠𝖬: `{memory.percent}%`"
     )
-    msg3 = f"{msg2}\nand by the way you're a temporary user"
+    msg3 = f"{msg2}\n𝖺𝗇𝖽 𝖡𝗒 𝗍𝗁𝖾 𝗐𝖺𝗒 𝖸𝗈𝗎'𝗋𝖾 𝖺 𝖳𝖾𝗆𝗉𝗈𝗋𝖺𝗋𝗒 𝖴𝗌𝖾𝗋!"
     if temp_is_allowed(sender):
         msg = msg3
     elif not user_is_allowed(sender):
         priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
-        msg = f"{msg1}You're not allowed access to this bot"
-        msg += f"\nAsk [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
-        msg += "(nicely) to grant you access."
+        msg = f"{msg1}𝖸𝗈𝗎'𝗋𝖾 𝖭𝗈𝗍 𝖠𝗅𝗅𝗈𝗐𝖾𝖽 𝖠𝖼𝖼𝖾𝗌𝗌 𝗍𝗈 𝗍𝗁𝗂𝗌 𝖡𝗈𝗍!"
+        msg += f"\n𝖠𝗌𝗄 [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
+        msg += "(𝗇𝗂𝖼𝖾𝗅𝗒) 𝗍𝗈 𝖦𝗋𝖺𝗇𝗍 𝗒𝗈𝗎 𝖠𝖼𝖼𝖾𝗌𝗌."
     if not msg:
         msg = msg2
     await event.edit(
