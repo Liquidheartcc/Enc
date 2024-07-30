@@ -122,7 +122,7 @@ async def start(event, args, client):
         msg = msg2
     
     # Choose a random photo
-    random_photo = random.choice(JPG_FILES)
+    random_photo = random.choice(JPG_FILES.split())
 
     # Send the random photo with caption
     await event.client.send_file(
