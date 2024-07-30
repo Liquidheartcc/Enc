@@ -101,9 +101,9 @@ async def start(event, args, client):
     """A function for the start command, accepts no arguments yet!"""
     currentTime = tf(time.time() - botStartTime)
     msg = ""
-    msg1 = f"Hi `{event.sender.first_name}`\n"
+    msg1 = f"Greetings `{event.sender.first_name}`\n"
     msg2 = (
-        f"{msg1}➙ UPTIME: `{currentTime}`\n➙ STATUS: `Active Now`/n⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅⋅.˳˳.⋅ॱ˙˙ॱ⋅.˳˳.⋅ॱ˙˙ॱᐧ.˳˳.⋅"
+        f"{msg1}➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active Now`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%` • 𝖱𝖠𝖬: `{memory.percent}%`"
     )
     msg3 = f"{msg2}\nand by the way you're a temporary user"
     user = event.sender_id
