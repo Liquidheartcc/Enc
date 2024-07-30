@@ -108,14 +108,16 @@ async def another(text, title, epi, sea, metadata, dl):
     return text
 
 
-async def forward_(name, out, ds, mi, f, ani):
+async def forward_(name, out, ds, mi, f, ani, n):
     fb = conf.FBANNER
     fc = conf.FCHANNEL
     fs = conf.FSTICKER
     if not fc:
         return
     try:
-        pic_id, f_msg = await f_post(name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb)
+        pic_id, f_msg = await f_post(
+            name, out, ani, conf.FCODEC, mi, _filter=f, evt=fb, direct=n
+        )
         if pic_id:
             await pyro.send_photo(photo=pic_id, caption=f_msg, chat_id=fc)
     except Exception:
