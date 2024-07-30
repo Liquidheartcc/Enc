@@ -121,7 +121,8 @@ async def start(event, args, client):
     if not msg:
         msg = msg2
     await event.reply(
-        msg,
+        file="https://te.legra.ph/file/c8c7f77b821d949ed45f4.jpg",
+        caption=msg,
         buttons=[
             [Button.inline("Help", data="ihelp")],
         ],
