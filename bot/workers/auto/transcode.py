@@ -487,7 +487,7 @@ async def thing():
             text = str()
             mi = await info(dl)
             mi2 = await info(out)
-            forward_task = asyncio.create_task(forward_(name, out, up, mi, f, ani))
+            forward_task = asyncio.create_task(forward_(name, out, up, mi, f, ani, n))
         
             text = ""
             if mi:
