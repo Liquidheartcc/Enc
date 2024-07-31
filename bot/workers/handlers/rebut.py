@@ -119,6 +119,7 @@ async def en_download(event, args, client):
     Downloads the replied message: to a location (specified) locally
     Available arguments:
       End the args with '/' to specify the folder in which to download and let the bot use its filename
+      End the args with filename to specify the Filename as well as directory
       or:
         --dir DIR (Must be in double quotes.)
         --home (To download to current working directory.)
@@ -148,7 +149,7 @@ async def en_download(event, args, client):
                 to_parse=args,
                 get_unknown=True,
             )
-            if args.endswith("/"):
+            if args and args.endswith("/"):
                 _dir = args
             else:
                 loc = args
@@ -172,6 +173,11 @@ async def en_download(event, args, client):
                 download, e, download.file_name, event.sender_id
             )
         f_loc = _dir + loc if not link else _dir + download.file_name
+        if args and not args.endswith("/"):
+            new_file_name = args  # Use the new file name from args
+            new_f_loc = os.path.join(os.path.dirname(f_loc), new_file_name)
+            os.rename(f_loc, new_f_loc)
+            f_loc = new_f_loc
         await e.edit(f"__Saved to__ `{f_loc}` __successfully!__")
     except Exception:
         await logger(Exception)
