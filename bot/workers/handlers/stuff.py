@@ -103,23 +103,26 @@ async def start(event, args, client):
     cpuUsage = psutil.cpu_percent(interval=0.5)
     memory = psutil.virtual_memory()
     msg = ""
+    msg0 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n"
     msg1 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄\n\n"
     msg2 = (
         f"{msg1}➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%`  |  𝖱𝖠𝖬: `{memory.percent}%`"
     )
-    msg3 = f"{msg2}\n𝖺𝗇𝖽 𝖡𝗒 𝗍𝗁𝖾 𝗐𝖺𝗒 𝖸𝗈𝗎'𝗋𝖾 𝖺 𝖳𝖾𝗆𝗉𝗈𝗋𝖺𝗋𝗒 𝖴𝗌𝖾𝗋!"
+    msg3 = (
+        f"➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%`  |  𝖱𝖠𝖬: `{memory.percent}%`"
+    )
+    msg4 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄 𝖺𝗇𝖽 𝖡𝗒 𝗍𝗁𝖾 𝗐𝖺𝗒 𝖸𝗈𝗎'𝗋𝖾 𝖺 𝖳𝖾𝗆𝗉𝗈𝗋𝖺𝗋𝗒 𝖴𝗌𝖾𝗋!\n\n{msg3}"
     user = event.sender_id
     if not user_is_owner(user) and event.is_private:
         if not pm_is_allowed(in_pm=True):
             return await event.delete()
     if temp_is_allowed(user):
-        msg = msg3
+        msg = msg4
     elif not user_is_allowed(user):
         priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
-        msg = f"{msg1}𝖸𝗈𝗎'𝗋𝖾 𝖭𝗈𝗍 𝖠𝗅𝗅𝗈𝗐𝖾𝖽 𝖠𝖼𝖼𝖾𝗌𝗌 𝗍𝗈 𝗍𝗁𝗂𝗌 𝖡𝗈𝗍!"
+        msg = f"{msg0}𝖸𝗈𝗎'𝗋𝖾 𝖭𝗈𝗍 𝖠𝗅𝗅𝗈𝗐𝖾𝖽 𝖠𝖼𝖼𝖾𝗌𝗌 𝗍𝗈 𝗍𝗁𝗂𝗌 𝖡𝗈𝗍!"
         msg += f"\n𝖠𝗌𝗄 [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
         msg += "(𝗇𝗂𝖼𝖾𝗅𝗒) 𝗍𝗈 𝖦𝗋𝖺𝗇𝗍 𝗒𝗈𝗎 𝖠𝖼𝖼𝖾𝗌𝗌."
-
     if not msg:
         msg = msg2
 
