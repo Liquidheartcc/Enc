@@ -160,6 +160,8 @@ async def ihelp(event):
 async def beck(event):
     sender = event.query.user_id
     currentTime = tf(time.time() - botStartTime)
+    cpuUsage = psutil.cpu_percent(interval=0.5)
+    memory = psutil.virtual_memory()
     msg = ""
     msg1 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄\n\n"
     msg2 = (
