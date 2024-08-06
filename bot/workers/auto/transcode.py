@@ -48,7 +48,7 @@ TOKEN_PICKLE_FILE_PATH = 'bot/token.pickle'
 GDRIVE_ID = '1B7B15U7a14mWpPKvKvMe6vRXAg10zpL2'
 
 def upload_to_gdrive(file_path, folder_id):
-    """Uploads a file to Google Drive and returns the web view link."""
+    """Uploads a file to Google Drive and returns the download URL."""
     creds = None
     if os.path.exists(TOKEN_PICKLE_FILE_PATH):
         with open(TOKEN_PICKLE_FILE_PATH, 'rb') as token:
@@ -67,8 +67,13 @@ def upload_to_gdrive(file_path, folder_id):
         'name': os.path.basename(file_path),
         'parents': [folder_id],
     }
-    file = service.files().create(body=file_metadata, media_body=media, fields='id,webViewLink').execute()
-    return file.get("webViewLink")
+    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    file_id = file.get("id")
+    
+    # Construct the download URL
+    download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    
+    return download_url
 
 thumb2 = "thumb2.jpg"
 
