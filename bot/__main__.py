@@ -135,14 +135,22 @@ async def _(e):
 
 @tele.on(events.NewMessage(pattern="/referer"))
 async def _(e):
-    args = e.message.text.split(maxsplit=1)[1:]  # Extract arguments after the command
-    await event_handler(e, set_referer, args)
+    args = e.message.text.split(maxsplit=1)  # Split the message into command and arguments
+    if len(args) < 2:
+        return await e.reply("Please provide a referer URL. Example: `/referer https://example.com`")
+    
+    referer_url = args[1]  # Get the referer URL
+    await event_handler(e, set_referer, [referer_url])
 
 
 @tele.on(events.NewMessage(pattern="/scrape"))
 async def _(e):
-    args = e.message.text.split(maxsplit=1)[1:]  # Extract arguments after the command
-    await event_handler(e, scrape, args)
+    args = e.message.text.split(maxsplit=1)  # Extract arguments after the command
+    if len(args) < 2:
+        return await e.reply("Please provide a page URL. Example: `/scrape https://example.com/page`")
+    
+    page_url = args[1]  # Get the page URL
+    await event_handler(e, scrape, [page_url])
 
 
 @tele.on(events.NewMessage(pattern=command(["help"])))
