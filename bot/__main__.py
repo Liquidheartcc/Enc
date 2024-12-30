@@ -131,6 +131,17 @@ async def _(e):
 async def _(e):
     await event_handler(e, up)
 
+@tele.on(events.NewMessage(pattern="/referer"))
+async def _(e):
+    args = e.message.text.split(maxsplit=1)[1:]  # Extract arguments after the command
+    await event_handler(e, set_referer, args)
+
+
+@tele.on(events.NewMessage(pattern="/scrape"))
+async def _(e):
+    args = e.message.text.split(maxsplit=1)[1:]  # Extract arguments after the command
+    await event_handler(e, scrape, args)
+
 
 @tele.on(events.NewMessage(pattern=command(["help"])))
 async def _(e):
