@@ -1,0 +1,404 @@
+import os
+import shutil
+import time
+import random
+import psutil
+
+from playwright.async_api import async_playwright
+from bot import Button, botStartTime, dt, subprocess, version_file
+from bot.config import _bot, conf
+from bot.fun.emojis import enmoji
+from bot.utils.bot_utils import add_temp_user, get_readable_file_size, rm_temp_user
+from bot.utils.bot_utils import time_formatter as tf
+from bot.utils.db_utils import save2db2
+from bot.utils.msg_utils import (
+    edit_message,
+    pm_is_allowed,
+    reply_message,
+    temp_is_allowed,
+    user_is_allowed,
+    user_is_owner,
+)
+from bot.utils.os_utils import file_exists
+
+# Dictionary to store user-specific referer URLs
+user_referer = {}
+
+# Default referer URL
+DEFAULT_REFERER = "https://javgg.net"
+
+async def set_referer(event, args, client):
+    """Handle the /referer command to set the referer URL."""
+    if not user_is_allowed(event.sender_id):
+        return await event.delete()
+
+    if not args:
+        return await reply_message(event, "Please provide a referer URL. Example: `/referer https://example.com`")
+
+    # Save the referer URL for the user
+    referer_url = args[0]
+    user_referer[event.sender_id] = referer_url
+
+    await reply_message(event, f"Referer URL set to: `{referer_url}`")
+
+async def scrape(event, args, client):
+    """Handle the /scrape command."""
+    if not user_is_allowed(event.sender_id):
+        return await event.delete()
+
+    # Get the referer for the user, or use the default
+    referer = user_referer.get(event.sender_id, DEFAULT_REFERER)
+
+    # Check if page URL is provided
+    if not args:
+        return await reply_message(event, "Please provide a page URL. Example: `/scrape https://example.com/page`")
+
+    page_url = args[0]
+
+    # Reply with the processing message
+    msg = await reply_message(event, "Fetching .m3u8 URLs...")
+
+    # Get the .m3u8 URLs
+    m3u8_urls = await get_m3u8_urls(referer, page_url)
+
+    # Format the results for the bot message
+    if m3u8_urls:
+        urls_text = "\n".join(f"`{url}`" for url in m3u8_urls)
+        response = f"Found .m3u8 URLs:\n\n{urls_text}"
+    else:
+        response = "No .m3u8 URLs found."
+
+    # Edit the message with the results
+    await edit_message(msg, response)
+
+
+async def get_m3u8_urls(referer, page_url):
+    """Scrape all .m3u8 URLs using Playwright."""
+    m3u8_urls = []
+
+    try:
+        async with async_playwright() as p:
+            browser = await p.firefox.launch(headless=True)
+            context = await browser.new_context(extra_http_headers={"Referer": referer})
+            page = await context.new_page()
+
+            # Log requests to find .m3u8
+            async def log_request(request):
+                if ".m3u8" in request.url:
+                    m3u8_urls.append(request.url)
+
+            page.on("request", log_request)
+            await page.goto(page_url, wait_until="domcontentloaded", timeout=60000)
+            await page.wait_for_timeout(5000)
+            await browser.close()
+    except Exception as e:
+        return [f"Error: {str(e)}"]
+    return m3u8_urls
+
+
+async def up(event, args, client):
+    """Ping bot!"""
+    if not user_is_allowed(event.sender_id):
+        return await event.delete()
+    ist = dt.now()
+    msg = await reply_message(event, "…")
+    st = dt.now()
+    ims = (st - ist).microseconds / 1000
+    msg1 = "**Pong! ——** `{}`__ms__"
+    st = dt.now()
+    await edit_message(msg, msg1.format(ims))
+    ed = dt.now()
+    ms = (ed - st).microseconds / 1000
+    await edit_message(msg, f"1. {msg1.format(ims)}\n2. {msg1.format(ms)}")
+
+
+async def status(event, args, client):
+    """Gets status of bot and server where bot is hosted.
+    Requires no arguments."""
+    if not user_is_allowed(event.sender_id):
+        return await event.delete()
+    branch = _bot.repo_branch or "❓"
+    last_commit = "UNAVAILABLE!"
+    if os.path.exists(".git"):
+        try:
+            last_commit = subprocess.check_output(
+                ["git log -1 --date=short --pretty=format:'%cd || %cr'"], shell=True
+            ).decode()
+        except Exception:
+            pass
+
+    if file_exists(version_file):
+        with open(version_file, "r") as file:
+            vercheck = file.read().strip()
+            file.close()
+    else:
+        vercheck = "Tf?"
+    currentTime = tf(time.time() - botStartTime)
+    ostime = tf(time.time() - psutil.boot_time())
+    swap = psutil.swap_memory()
+    total, used, free = shutil.disk_usage(".")
+    total = get_readable_file_size(total)
+    used = get_readable_file_size(used)
+    free = get_readable_file_size(free)
+    sent = get_readable_file_size(psutil.net_io_counters().bytes_sent)
+    recv = get_readable_file_size(psutil.net_io_counters().bytes_recv)
+    cpuUsage = psutil.cpu_percent(interval=0.5)
+    p_cores = psutil.cpu_count(logical=False)
+    t_cores = psutil.cpu_count(logical=True)
+    memory = psutil.virtual_memory()
+    disk = psutil.disk_usage("/").percent
+    await event.reply(
+        f"**Version:** `{vercheck}`\n"
+        f"**Branch:** `{branch}`\n"
+        f"**Commit Date:** `{last_commit}`\n\n"
+        f"**Bot Uptime:** `{currentTime}`\n"
+        f"**System Uptime:** `{ostime}`\n\n"
+        f"**Total Disk Space:** `{total}`\n"
+        f"**Used:** `{used}` "
+        f"**Free:** `{free}`\n\n"
+        f"**SWAP:** `{get_readable_file_size(swap.total)}`"
+        f"** | **"
+        f"**Used:** `{swap.percent}%`\n\n"
+        f"**Upload:** `{sent}`\n"
+        f"**Download:** `{recv}`\n\n"
+        f"**Physical Cores:** `{p_cores}`\n"
+        f"**Total Cores:** `{t_cores}`\n\n"
+        f"**CPU:** `{cpuUsage}%` "
+        f"**RAM:** `{memory.percent}%` "
+        f"**DISK:** `{disk}%`\n\n"
+        f"**Total RAM:** `{get_readable_file_size(memory.total)}`\n"
+        f"**Used:** `{get_readable_file_size(memory.used)}` "
+        f"**Free:** `{get_readable_file_size(memory.available)}`"
+    )
+
+
+async def start(event, args, client):
+    """A function for the start command, accepts no arguments yet!"""
+    currentTime = tf(time.time() - botStartTime)
+    cpuUsage = psutil.cpu_percent(interval=0.5)
+    memory = psutil.virtual_memory()
+    msg = ""
+    msg0 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n"
+    msg1 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄\n\n"
+    msg2 = (
+        f"{msg1}➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%`  |  𝖱𝖠𝖬: `{memory.percent}%`"
+    )
+    msg3 = (
+        f"➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%`  |  𝖱𝖠𝖬: `{memory.percent}%`"
+    )
+    msg4 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄 𝖺𝗇𝖽 𝖡𝗒 𝗍𝗁𝖾 𝗐𝖺𝗒 𝖸𝗈𝗎'𝗋𝖾 𝖺 𝖳𝖾𝗆𝗉𝗈𝗋𝖺𝗋𝗒 𝖴𝗌𝖾𝗋!\n\n{msg3}"
+    user = event.sender_id
+    if not user_is_owner(user) and event.is_private:
+        if not pm_is_allowed(in_pm=True):
+            return await event.delete()
+    if temp_is_allowed(user):
+        msg = msg4
+    elif not user_is_allowed(user):
+        priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
+        msg = f"{msg0}𝖸𝗈𝗎'𝗋𝖾 𝖭𝗈𝗍 𝖠𝗅𝗅𝗈𝗐𝖾𝖽 𝖠𝖼𝖼𝖾𝗌𝗌 𝗍𝗈 𝗍𝗁𝗂𝗌 𝖡𝗈𝗍!"
+        msg += f"\n𝖠𝗌𝗄 [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
+        msg += "(𝗇𝗂𝖼𝖾𝗅𝗒) 𝗍𝗈 𝖦𝗋𝖺𝗇𝗍 𝗒𝗈𝗎 𝖠𝖼𝖼𝖾𝗌𝗌."
+    if not msg:
+        msg = msg2
+
+    JPG_FILES = "https://te.legra.ph/file/134bc42d6583f3dda2b42.jpg https://te.legra.ph/file/3378bb55bf004c7b9ce55.jpg https://te.legra.ph/file/c9d532443ebbf7d705572.jpg https://te.legra.ph/file/f84a5cd872c945b981caf.jpg https://te.legra.ph/file/f50388d50578478583396.jpg https://te.legra.ph/file/28107d3afb0ad1caa9afb.jpg https://te.legra.ph/file/df621ee794c45171c2b58.jpg https://te.legra.ph/file/eb382dd3f96304631d29c.jpg https://te.legra.ph/file/b84b178964984b5930abd.jpg https://te.legra.ph/file/d7b6648cc46dddc643e7f.jpg https://te.legra.ph/file/016eb6524c1bf589297e5.jpg https://te.legra.ph/file/26c311ba26889f63096b1.jpg https://te.legra.ph/file/ccbf7b343cf0f4c9b8aec.jpg https://te.legra.ph/file/ff2b36d9ac79e93c613f2.jpg"
+                 
+    # Choose a random photo
+    random_photo = random.choice(JPG_FILES.split())
+
+    # Send the random photo with caption
+    await event.client.send_file(
+        event.chat_id,
+        random_photo,
+        caption=msg,
+        buttons=[
+            [Button.inline("Help", data="ihelp")],
+        ]
+    )
+    
+async def help(event, args, client):
+    return await start(event, args, client)
+
+
+async def ihelp(event):
+    priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
+    await event.edit(
+        "**⚙️ 𝖠𝗇 𝖤𝖭𝖢𝖮𝖣𝖤𝖱 𝖡𝖮𝖳**\n\n"
+        "➟ 𝖨𝗍 𝖤𝗇𝖼𝗈𝖽𝖾𝗌 𝖵𝗂𝖽𝖾𝗈𝗌 𝖶𝗂𝗍𝗁 𝗒𝗈𝗎𝗋 𝖢𝗎𝗌𝗍𝗈𝗆 𝖥𝖥𝖬𝖯𝖤𝖦 𝗈𝗋 𝖧𝖺𝗇𝖽𝖻𝗋𝖺𝗄𝖾-𝖢𝖫𝖨 𝗈𝗋 𝖬𝖪𝖵𝗍𝗈𝗈𝗅𝗇𝗂𝗑 𝗌𝖾𝗍𝗍𝗂𝗇𝗀𝗌."
+        "\n➟ 𝖤𝗇𝖼𝗈𝖽𝖾 𝗂𝗇 𝖬𝗎𝗅𝗍𝗂𝗉𝗅𝖾 𝖱𝖾𝗌𝗈𝗅𝗎𝗍𝗂𝗈𝗇.\n\t\t• 1080𝗉  • 720𝗉  • 480𝗉\n"
+        "➟ 𝖲𝗎𝗉𝗉𝗈𝗋𝗍 𝖬𝗎𝗑 𝖺𝗇𝖽 𝖱𝖾-𝖬𝗎𝗑 𝖲𝖾𝗍𝗍𝗂𝗇𝗀𝗌.\n"
+        "➟ 𝖣𝗂𝗋𝖾𝖼𝗍 𝖫𝗂𝗇𝗄/𝖥𝗈𝗋𝗐𝖺𝗋𝖽 𝖥𝗂𝗅𝖾𝗌 𝖯𝗋𝗈𝖼𝖾𝗌𝗌𝗂𝗇𝗀."
+        f"\n\n⭐ 𝖮𝗐𝗇𝖾𝖽 𝖡𝗒 [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]})",
+        buttons=[
+            [Button.inline("🔙 Back", data="beck")],
+        ],
+    )
+
+
+async def beck(event):
+    sender = event.query.user_id
+    currentTime = tf(time.time() - botStartTime)
+    cpuUsage = psutil.cpu_percent(interval=0.5)
+    memory = psutil.virtual_memory()
+    msg = ""
+    msg0 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n"
+    msg1 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄\n\n"
+    msg2 = (
+        f"{msg1}➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%`  |  𝖱𝖠𝖬: `{memory.percent}%`"
+    )
+    msg3 = (
+        f"➙ 𝖴𝖯𝖳𝖨𝖬𝖤: `{currentTime}`\n➙ 𝖲𝖳𝖠𝖳𝖴𝖲: `Active`\n➙ 𝖢𝖯𝖴: `{cpuUsage}%`  |  𝖱𝖠𝖬: `{memory.percent}%`"
+    )
+    msg4 = f"𝖦𝗋𝖾𝖾𝗍𝗂𝗇𝗀𝗌 {event.sender.first_name}\n𝖨 𝖺𝗆 𝖱𝖾𝖺𝖽𝗒 𝗍𝗈 𝖯𝗋𝗈𝖼𝖾𝗌𝗌 𝗍𝗁𝖾 𝖳𝖺𝗌𝗄 𝖺𝗇𝖽 𝖡𝗒 𝗍𝗁𝖾 𝗐𝖺𝗒 𝖸𝗈𝗎'𝗋𝖾 𝖺 𝖳𝖾𝗆𝗉𝗈𝗋𝖺𝗋𝗒 𝖴𝗌𝖾𝗋!\n\n{msg3}"
+    if temp_is_allowed(sender):
+        msg = msg4
+    elif not user_is_allowed(sender):
+        priv = await event.client.get_entity(int(conf.OWNER.split()[0]))
+        msg = f"{msg0}𝖸𝗈𝗎'𝗋𝖾 𝖭𝗈𝗍 𝖠𝗅𝗅𝗈𝗐𝖾𝖽 𝖠𝖼𝖼𝖾𝗌𝗌 𝗍𝗈 𝗍𝗁𝗂𝗌 𝖡𝗈𝗍!"
+        msg += f"\n𝖠𝗌𝗄 [{priv.first_name}](tg://user?id={conf.OWNER.split()[0]}) "
+        msg += "(𝗇𝗂𝖼𝖾𝗅𝗒) 𝗍𝗈 𝖦𝗋𝖺𝗇𝗍 𝗒𝗈𝗎 𝖠𝖼𝖼𝖾𝗌𝗌."
+    if not msg:
+        msg = msg2
+    await event.edit(
+        msg,
+        buttons=[
+            [Button.inline("Help", data="ihelp")],
+        ],
+    )
+
+
+async def temp_unauth(event, args, client):
+    """
+    Un-authorise a user or chat
+    Requires either reply to message or user_id as args
+    """
+    sender = event.sender_id
+    error = "Failed!,\nCan't remove from temporarily allowed users"
+    if not user_is_owner(sender):
+        return event.reply("Not Happening.")
+    if event.is_reply:
+        rep_event = await event.get_reply_message()
+        new_id = rep_event.sender_id
+    else:
+        if args is not None:
+            args = args.strip()
+            if args.lstrip("-").isdigit():
+                new_id = int(args)
+            else:
+                return await event.reply(
+                    f"What do you mean by  `{args}` ?\nneed help? send /unpermit"
+                )
+        else:
+            return await event.reply(
+                "Either reply to a message sent by the user you want to remove from temporarily allowed users or send /unpermit (user-id)\nExample:\n  /unpermit 123456"
+            )
+    if new_id == sender:
+        return await event.reply("Why, oh why did you try to unpermit yourself?")
+    if user_is_owner(new_id):
+        return await event.reply(f"{error} because user is already a privileged user")
+    if not user_is_allowed(new_id):
+        return await event.reply(
+            f"{error} because user is not in the temporary allowed user list"
+        )
+    try:
+        new_user = await event.client.get_entity(new_id)
+        new_user = new_user.first_name
+    except Exception:
+        new_user = new_id
+    rm_temp_user(str(new_id))
+    await save2db2()
+    return await event.reply(
+        f"Removed `{new_user}` from temporarily allowed users {enmoji()}"
+    )
+
+
+async def temp_auth(event, args, client):
+    """
+    Authorizes a chat or user,
+    Requires either a reply to message or user_id as argument
+    """
+    sender = event.sender_id
+    error = "Failed!,\nCan't add to temporarily allowed users"
+    if not user_is_owner(sender):
+        return event.reply("Nope, not happening.")
+    if event.is_reply:
+        rep_event = await event.get_reply_message()
+        new_id = rep_event.sender_id
+    else:
+        if args is not None:
+            args = args.strip()
+            if args.lstrip("-").isdigit():
+                new_id = args
+            else:
+                return await event.reply(
+                    f"What do you mean by  `{args}` ?\nneed help? send /permit"
+                )
+        else:
+            return await event.reply(
+                "Either reply to a message sent by the user you want to add to temporarily allowed users or send /permit (user-id)\nExample:\n  /permit 123456"
+            )
+    new_id = int(new_id)
+    if new_id == sender:
+        return await event.reply("Why, oh why did you try to permit yourself?")
+    if user_is_owner(new_id):
+        return await event.reply(f"{error} because user is already a privileged user")
+    if user_is_allowed(new_id):
+        return await event.reply(f"{error} because user is already added")
+    try:
+        new_user = await event.client.get_entity(new_id)
+        new_user = new_user.first_name
+    except Exception:
+        new_user = new_id
+    add_temp_user(str(new_id))
+    await save2db2()
+    return await event.reply(
+        f"Added `{new_user}` to temporarily allowed users {enmoji()}"
+    )
+
+
+async def icommands(event):
+    s = conf.CMD_SUFFIX or str()
+    await event.edit(
+        f"""`
+start{s} - check if bot is awake and get usage.
+restart{s} -  restart bot
+bash{s} - /bash + command
+eval{s} - evaluate code
+pause{s} - prevent bot from encoding
+peval{s} - same as eval but with pyrogram
+ping - ping!
+add{s} - add video to queue
+l{s} - add link to queue
+ql{s} - add torrent link to queue
+s{s} - select files from torrent to encode
+queue{s} - list queue
+batch{s} - preview batches
+list{s} - list all files in a torrent
+forward{s} - manually forward a message to fchannel
+v{s} - turn v2,3,4… on (with message) or off
+upload{s} - upload from a local directory or link
+rename{s} - rename a video file/link
+mux{s} - remux a file
+get{s} - get current ffmpeg code
+set{s} - set custom ffmpeg code
+reset{s} - reset default ffmpeg code
+mset{s} - set, reset, disable mux_args
+mget{s} - view current mux_args
+airing{s} - get anime airing info
+anime{s} - get anime info
+name{s} - quick filter with anime_title
+vname{s} - get list of name filter
+delname{s} - delete name filter
+rss{s} - edit, delete & subscribe rss feeds
+status{s} - 🆕 get bot's status
+showthumb{s} - 🖼️ show current thumbnail
+parse{s} - toggle parsing with captions or anilist
+cancelall{s} - ❌ clear cached downloads & queued files
+clear{s} - clear queued files
+logs{s} - get bot logs
+help{s} - same as start`
+
+All above commands accept '-h' / '--help' arguments to get more detailed help about each command.
+        """,
+        buttons=[Button.inline("🔙 Back", data="ihelp")],
+    )
