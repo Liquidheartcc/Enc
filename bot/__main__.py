@@ -81,6 +81,8 @@ from .workers.handlers.stuff import (
     temp_auth,
     temp_unauth,
     up,
+    set_referer,
+    scrape,
 )
 
 cmd_suffix = conf.CMD_SUFFIX.strip()
