@@ -148,8 +148,6 @@ async def _(e):
             return await e.reply("Please provide a referer URL by replying to a message or in the command. Example: `/referer https://example.com`")
         referer_url = args[1]
     
-    # Respond with the provided referer URL
-    await e.reply(f"Referer URL set to: `{referer_url}`", parse_mode="markdown")
     await event_handler(e, set_referer, [referer_url])
     
 @tele.on(events.NewMessage(pattern="/scrape"))
