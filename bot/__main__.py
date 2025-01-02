@@ -145,13 +145,22 @@ async def _(e):
 
 @tele.on(events.NewMessage(pattern="/scrape"))
 async def _(e):
-    args = shlex.split(e.message.text)  # Properly split the command and arguments
-    if len(args) < 2:
-        return await e.reply("Please provide a page URL. Example: `/scrape https://example.com/page`")
+    # Check if the command is a reply to another message
+    if e.is_reply:
+        # Fetch the replied message
+        replied_message = await e.get_reply_message()
+        # Get the URL from the replied message
+        page_url = replied_message.text.strip()
+    else:
+        # If not a reply, extract arguments from the command
+        args = e.message.text.split(maxsplit=1)
+        if len(args) < 2:
+            return await e.reply("Please provide a page URL by replying to a message or in the command. Example: `/scrape https://example.com/page`")
+        page_url = args[1]
     
-    page_url = args[1]  # Get the page URL
+    # Proceed with the scraping process
+    await e.reply(f"Processing URL: `{page_url}`", parse_mode="markdown")
     await event_handler(e, scrape, [page_url])
-
 
 @tele.on(events.NewMessage(pattern=command(["help"])))
 async def _(e):
