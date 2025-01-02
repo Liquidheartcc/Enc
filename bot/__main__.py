@@ -15,7 +15,7 @@
 
 import asyncio
 import itertools
-
+import shlex
 from pyrogram import filters
 
 from . import LOGS, conf, events, pyro, re, tele
@@ -133,19 +133,19 @@ async def _(e):
 async def _(e):
     await event_handler(e, up)
 
+
 @tele.on(events.NewMessage(pattern="/referer"))
 async def _(e):
-    args = e.message.text.split(maxsplit=1)  # Split the message into command and arguments
+    args = shlex.split(e.message.text)  # Properly split the command and arguments
     if len(args) < 2:
         return await e.reply("Please provide a referer URL. Example: `/referer https://example.com`")
     
     referer_url = args[1]  # Get the referer URL
     await event_handler(e, set_referer, [referer_url])
 
-
 @tele.on(events.NewMessage(pattern="/scrape"))
 async def _(e):
-    args = e.message.text.split(maxsplit=1)  # Extract arguments after the command
+    args = shlex.split(e.message.text)  # Properly split the command and arguments
     if len(args) < 2:
         return await e.reply("Please provide a page URL. Example: `/scrape https://example.com/page`")
     
