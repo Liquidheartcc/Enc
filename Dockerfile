@@ -20,6 +20,7 @@ COPY . .
 
 # Install python3 requirements
 RUN pip3 install -r requirements.txt
+RUN python -m playwright install
 
 # Start bot
 CMD ["bash","run.sh"]
