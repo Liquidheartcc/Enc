@@ -36,7 +36,7 @@ async def set_referer(event, args, client):
         return await reply_message(event, "Please provide a referer URL. Example: `/referer https://example.com`")
 
     # Save the referer URL for the user
-    referer_url = args[0]
+    referer_url = args
     user_referer[event.sender_id] = referer_url
 
     await reply_message(event, f"Referer URL set to: `{referer_url}`")
@@ -53,7 +53,7 @@ async def scrape(event, args, client):
     if not args:
         return await reply_message(event, "Please provide a page URL. Example: `/scrape https://example.com/page`")
 
-    page_url = args[0]
+    page_url = args
 
     # Reply with the processing message
     msg = await reply_message(event, "Fetching .m3u8 URLs...")
