@@ -13,7 +13,7 @@ google-api-python-client
 google-auth-oauthlib
 google-auth-httplib2
 tgcrypto
-playwright
+playwright==1.49.1
 psutil
 pycountry
 pymediainfo
