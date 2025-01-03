@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.10.12-slim-bullseye
 
 # Setup home directory, non interactive shell and timezone
 RUN mkdir /bot /tgenc && chmod 777 /bot
@@ -20,7 +20,8 @@ COPY . .
 
 # Install python3 requirements
 RUN pip3 install -r requirements.txt
-RUN python -m playwright install
+RUN playwright install
+RUN playwright install-deps
 
 # Start bot
 CMD ["bash","run.sh"]
